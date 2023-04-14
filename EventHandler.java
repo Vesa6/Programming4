@@ -12,7 +12,85 @@ public class EventHandler implements ActionListener {
         this.passwordField = passwordField;
     }
 
+    private void createAddUserGUI() {
+        JFrame addUserFrame = new JFrame("Lisää asiakas");
+        addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    
+        JLabel addUserLabel = new JLabel("Lisää asiakas");
+        addUserLabel.setHorizontalAlignment(JLabel.CENTER);
+        addUserLabel.setVerticalAlignment(JLabel.TOP);
+
+        //Add padding. For whatever reason, struts don't work here.
+        addUserLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); 
+    
+        addUserFrame.add(addUserLabel, BorderLayout.NORTH);
+    
+        // Get screen dimensions and calculate the window size
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int frameWidth = (int)(screenSize.width * 0.6);
+        int frameHeight = (int)(screenSize.height * 0.8);
+
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+
+        Dimension textBoxDimension = new Dimension(400, 20);
+
+        //This creates an empty space between the first row of text boxes and the title of the view.
+        leftPanel.add(Box.createVerticalStrut(100));
+        /////////// First row of text boxes ///////////
+        JTextField firstNameField = new JTextField(20);
+        firstNameField.setMaximumSize(textBoxDimension);
+        leftPanel.add(new JLabel("Etunimi:"));
+        leftPanel.add(firstNameField);
+        leftPanel.add(Box.createVerticalGlue());
+        
+        
+        JTextField homeAddressField = new JTextField(20);
+        homeAddressField.setMaximumSize(textBoxDimension);
+        leftPanel.add(new JLabel("Kotiosoite:"));
+        leftPanel.add(homeAddressField);
+        leftPanel.add(Box.createVerticalGlue());
+
+        JTextField emailField = new JTextField(20);
+        emailField.setMaximumSize(textBoxDimension);
+        leftPanel.add(new JLabel("Sähköposti:"));
+        leftPanel.add(emailField);
+        leftPanel.add(Box.createVerticalGlue());
+
+        JRadioButton membershipType = new JRadioButton("Kuukausijäsenyys");
+        JRadioButton membershipType2 = new JRadioButton("Kertakäynti");
+        leftPanel.add(membershipType);
+        leftPanel.add(Box.createVerticalGlue());
+        leftPanel.add(membershipType2);
+        leftPanel.add(Box.createVerticalGlue());
+
+        JPanel mainPanel = new JPanel(new GridLayout(1,2));
+        mainPanel.add(leftPanel);
+
+        addUserFrame.add(mainPanel, BorderLayout.CENTER);
+    
+        addUserFrame.setSize(frameWidth, frameHeight);
+        addUserFrame.setLocationRelativeTo(null);
+        addUserFrame.setVisible(true);
+    }
+    
+
     private void createPostLoginGUI(ActionEvent e, String enteredUsername, String enteredPassword) {
+
+        /*
+         * N.B!
+         * LIST ALL THE LISTENERS BETWEEN THESE COMMENTS FOR CLARITY.
+         * ...They get lost easily.
+         */
+        ActionListener addUserButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createAddUserGUI();
+            }
+        };
+         /*
+         * 
+         */
 
         if (enteredUsername.equals("testuser") && enteredPassword.equals("testpassword")) {
             // Close the current login frame
@@ -30,7 +108,7 @@ public class EventHandler implements ActionListener {
             imageIcon = new ImageIcon(image);
     
             JLabel label = new JLabel();
-            label.setText("Welcome to GymGate!");
+            label.setText("Tervetuloa GymGateen!");
             label.setIcon(imageIcon);
             label.setHorizontalTextPosition(JLabel.CENTER);
             label.setVerticalTextPosition(JLabel.BOTTOM);
@@ -39,13 +117,14 @@ public class EventHandler implements ActionListener {
             Font arialFont = new Font("Arial", Font.PLAIN, 24);
             label.setFont(arialFont);
     
-            JButton addMemberButton = new JButton("Add member");
+            JButton addMemberButton = new JButton("Lisää asiakas");
             addMemberButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            addMemberButton.addActionListener(addUserButtonListener);
     
-            JButton viewLogsButton = new JButton("View logs");
+            JButton viewLogsButton = new JButton("Selaa tapahtumia");
             viewLogsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     
-            JButton viewCustomersButton = new JButton("View customers");
+            JButton viewCustomersButton = new JButton("Selaa asiakkaita");
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
     
             JPanel mainPanel = new JPanel();

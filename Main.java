@@ -18,13 +18,15 @@ public class Main {
 
     public static void main(String[] args) {
 
+        Dimension textBoxDimension = new Dimension(200, 20);
+
         ImageIcon imageIcon = new ImageIcon("GymGate.png");
         Image image = imageIcon.getImage();
         image = image.getScaledInstance(200, 150, java.awt.Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(image);
 
         JLabel label = new JLabel();
-        label.setText("Welcome to GymGate!");
+        label.setText("Tervetuloa GymGateen!");
         label.setIcon(imageIcon);
         label.setHorizontalTextPosition(JLabel.CENTER);
         label.setVerticalTextPosition(JLabel.BOTTOM);
@@ -33,15 +35,15 @@ public class Main {
         Font arialFont = new Font("Arial", Font.PLAIN, 24);
         label.setFont(arialFont);
 
-        JLabel usernameLabel = new JLabel("Username:");
+        JLabel usernameLabel = new JLabel("Käyttäjänimi:");
         JTextField usernameField = new JTextField(20);
-        usernameField.setMaximumSize(new Dimension(200, usernameField.getPreferredSize().height));
+        usernameField.setMaximumSize(textBoxDimension);
 
-        JLabel passwordLabel = new JLabel("Password:");
+        JLabel passwordLabel = new JLabel("Salasana:");
         JPasswordField passwordField = new JPasswordField(20);
-        passwordField.setMaximumSize(new Dimension(200, passwordField.getPreferredSize().height));
+        passwordField.setMaximumSize(textBoxDimension);
 
-        JButton loginButton = new JButton("Login");
+        JButton loginButton = new JButton("Kirjaudu");
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         //This passes the username and password to the other class.
@@ -50,13 +52,13 @@ public class Main {
         JPanel usernamePanel = new JPanel();
         usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.X_AXIS));
         usernamePanel.add(usernameLabel);
-        usernamePanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        usernamePanel.add(Box.createHorizontalStrut(10));
         usernamePanel.add(usernameField);
 
         JPanel passwordPanel = new JPanel();
         passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.X_AXIS));
         passwordPanel.add(passwordLabel);
-        passwordPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        passwordPanel.add(Box.createHorizontalStrut(10));
         passwordPanel.add(passwordField);
 
         JPanel mainPanel = new JPanel();
