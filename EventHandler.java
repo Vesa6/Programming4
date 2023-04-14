@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.TextArea;
 
 public class EventHandler implements ActionListener {
     private JTextField usernameField;
@@ -21,7 +22,7 @@ public class EventHandler implements ActionListener {
         addUserLabel.setVerticalAlignment(JLabel.TOP);
 
         //Add padding. For whatever reason, struts don't work here.
-        addUserLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0)); 
+        addUserLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
     
         addUserFrame.add(addUserLabel, BorderLayout.NORTH);
     
@@ -34,16 +35,22 @@ public class EventHandler implements ActionListener {
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
         Dimension textBoxDimension = new Dimension(400, 20);
+        Dimension textBoxDimensionRight = new Dimension(200, 20);
 
         //This creates an empty space between the first row of text boxes and the title of the view.
         leftPanel.add(Box.createVerticalStrut(100));
+        //And this creates some space from left corner.
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 0));
         /////////// First row of text boxes ///////////
+
+        /////////// STUFF IN THE LEFT PANEL ///////////
+
+
         JTextField firstNameField = new JTextField(20);
         firstNameField.setMaximumSize(textBoxDimension);
         leftPanel.add(new JLabel("Etunimi:"));
         leftPanel.add(firstNameField);
         leftPanel.add(Box.createVerticalGlue());
-        
         
         JTextField homeAddressField = new JTextField(20);
         homeAddressField.setMaximumSize(textBoxDimension);
@@ -64,8 +71,46 @@ public class EventHandler implements ActionListener {
         leftPanel.add(membershipType2);
         leftPanel.add(Box.createVerticalGlue());
 
+        JButton saveButton = new JButton("Tallenna");
+        leftPanel.add(saveButton);
+        leftPanel.add(Box.createVerticalGlue());
+
+        /////////// STUFF IN THE LEFT PANEL ///////////
+
+
+        ///////// STUFF IN THE RIGHT PANEL /////////
+        JPanel rightPanel = new JPanel();
+        rightPanel.add(Box.createVerticalStrut(100));
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+        JTextField lastNameField = new JTextField(20);
+        lastNameField.setMaximumSize(textBoxDimensionRight);
+        rightPanel.add(new JLabel("Sukunimi:"));
+        rightPanel.add(lastNameField);
+        rightPanel.add(Box.createVerticalGlue());
+
+        JTextField phoneNumberField = new JTextField(20);
+        phoneNumberField.setMaximumSize(textBoxDimensionRight);
+        rightPanel.add(new JLabel("Puhelinnumero:"));
+        rightPanel.add(phoneNumberField);
+        rightPanel.add(Box.createVerticalGlue());
+
+        JTextArea notesField = new JTextArea(20, 20);
+        notesField.setLineWrap(true);
+        notesField.setMaximumSize(new Dimension(400,100));
+        notesField.setLineWrap(true);
+        rightPanel.add(new JLabel("Lisätiedot:"));
+        rightPanel.add(notesField);
+        rightPanel.add(Box.createVerticalGlue());
+
+        JButton cancelButton = new JButton("Peruuta");
+        rightPanel.add(cancelButton);
+        rightPanel.add(Box.createVerticalGlue());
+         ///////// STUFF IN THE RIGHT PANE /////////
+
         JPanel mainPanel = new JPanel(new GridLayout(1,2));
         mainPanel.add(leftPanel);
+        mainPanel.add(rightPanel);
 
         addUserFrame.add(mainPanel, BorderLayout.CENTER);
     
