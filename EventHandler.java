@@ -14,6 +14,7 @@ public class EventHandler implements ActionListener {
     }
 
     private void createAddUserGUI() {
+
         JFrame addUserFrame = new JFrame("Lisää asiakas");
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     
@@ -64,12 +65,54 @@ public class EventHandler implements ActionListener {
         leftPanel.add(emailField);
         leftPanel.add(Box.createVerticalGlue());
 
+        ButtonGroup membershipTypeGroup = new ButtonGroup();
+        JTextField months = new JTextField(20);
+        months.setMaximumSize(textBoxDimension);
+        JTextField visits = new JTextField(20);
+        visits.setMaximumSize(textBoxDimension);
+
+        //Make the fields invisible unless radiobutton activated
+        months.setVisible(false);
+        visits.setVisible(false);
+
         JRadioButton membershipType = new JRadioButton("Kuukausijäsenyys");
         JRadioButton membershipType2 = new JRadioButton("Kertakäynti");
+
+
+        /*
+         * This action listener is for the radio buttons.
+         * It makes the text fields visible when the radio button is selected.
+         * It also makes the other text field invisible.
+         */
+        ActionListener membershipListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (e.getSource() == membershipType) {
+                    months.setVisible(true);
+                    visits.setVisible(false);
+                } else if (e.getSource() == membershipType2) {
+                    months.setVisible(false);
+                    visits.setVisible(true);
+                }
+                leftPanel.revalidate();
+                leftPanel.repaint();
+            }
+        };
+        
+
+        membershipType.addActionListener(membershipListener);
+        membershipType2.addActionListener(membershipListener);
+
+        membershipTypeGroup.add(membershipType);
+        membershipTypeGroup.add(membershipType2);
+
         leftPanel.add(membershipType);
+        leftPanel.add(months);
         leftPanel.add(Box.createVerticalGlue());
         leftPanel.add(membershipType2);
+        leftPanel.add(visits);
         leftPanel.add(Box.createVerticalGlue());
+ 
 
         JButton saveButton = new JButton("Tallenna");
         leftPanel.add(saveButton);
