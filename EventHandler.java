@@ -15,6 +15,7 @@ public class EventHandler implements ActionListener {
 
     private void openHelpWindow() {
 
+
         JLabel ggLabel = new JLabel();
         ggLabel.setText("GYMGATE OY");
         ggLabel.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -36,6 +37,9 @@ public class EventHandler implements ActionListener {
             panel.add(contactLabel);
         }
 
+        JButton closeButton = new JButton("Sulje");
+        closeButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(closeButton);
         // Calculating the center of the screen to get the help window open in the
         // middle
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -44,9 +48,13 @@ public class EventHandler implements ActionListener {
 
         JFrame helpFrame = new JFrame("Tuki");
         helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        closeButton.addActionListener(e -> {
+            helpFrame.dispose();
+        });
         // Empty space above gymgate oy text
         ggLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-        helpFrame.setSize(240, 240);
+        helpFrame.setSize(240, 180);
         helpFrame.setLocation(centX - helpFrame.getWidth() / 2, centY - helpFrame.getHeight() / 2);
         helpFrame.setVisible(true);
         helpFrame.add(panel);
