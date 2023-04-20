@@ -8,6 +8,9 @@ public class EventHandler implements ActionListener {
     private JTextField usernameField;
     private JPasswordField passwordField;
 
+    //This is to dynamically change sizes of all buttons at toolbar at once
+    private static int BTNTBAR_HEIGHT = 50;
+
     public EventHandler(JTextField usernameField, JPasswordField passwordField) {
         this.usernameField = usernameField;
         this.passwordField = passwordField;
@@ -265,13 +268,13 @@ public class EventHandler implements ActionListener {
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             ImageIcon helpIcon = new ImageIcon("Help_icon.png");
-            Image helpImage = helpIcon.getImage().getScaledInstance(75, 75, Image.SCALE_SMOOTH);
+            Image helpImage = helpIcon.getImage().getScaledInstance(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT, Image.SCALE_SMOOTH);
             ImageIcon helpScaled = new ImageIcon(helpImage);
             JButton helpButton = new JButton(helpScaled);
             // helpButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
             helpButton.setBorder(BorderFactory.createEmptyBorder());
             helpButton.setContentAreaFilled(false);
-            helpButton.setPreferredSize(new Dimension(75, 75));
+            helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
             helpButton.addActionListener(helpButtonListener);
 
             JPanel toolPanel = new JPanel();
