@@ -33,7 +33,7 @@ public class CustomerDatabase {
         File file = new File(dbName);
         boolean Exists = file.exists();
 
-        String connectionString = "jdbc:sqlite:gymgate/" + dbName;
+        String connectionString = "jdbc:sqlite:" + dbName;
 
         connection = DriverManager.getConnection(connectionString);
 
