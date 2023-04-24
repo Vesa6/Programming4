@@ -5,6 +5,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.awt.TextArea;
 
 public class EventHandler implements ActionListener {
@@ -168,6 +171,7 @@ public class EventHandler implements ActionListener {
         leftPanel.add(saveButton);
         leftPanel.add(Box.createVerticalGlue());
 
+        
         /////////// STUFF IN THE LEFT PANEL ///////////
 
         ///////// STUFF IN THE RIGHT PANEL /////////
@@ -209,7 +213,38 @@ public class EventHandler implements ActionListener {
         addUserFrame.setSize(frameWidth, frameHeight);
         addUserFrame.setLocationRelativeTo(null);
         addUserFrame.setVisible(true);
+
+         /*
+         * This action listener is for the save button.
+         */
+        ActionListener saveListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                if ((e.getSource() == saveButton) && (membershipType.isSelected())) {
+                    DateTimeFormatter sqlDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate currentDate = LocalDate.now();
+                    String currentDateString = currentDate.format(sqlDateFormat);
+                    LocalDate endDate = currentDate.plusMonths(Integer.valueOf(months.getText()));
+                    String endDateString = endDate.format(sqlDateFormat);
+
+                    // For now, only monthly customers exist.
+                    String memberTypeSelected = "Kuukausijäsenyys";
+                    
+                    CustomerDatabase.getInstance().addCustomerMonthly(firstNameField.getText(), lastNameField.getText(), phoneNumberField.getText(), emailField.getText(), memberTypeSelected, currentDateString, endDateString, homeAddressField.getText(), 0, notesField.getText());
+                } else if ((e.getSource() == saveButton) && (membershipType2.isSelected())) {
+
+                    // For now, only monthly customers exist.
+                    String memberTypeSelected = "Kertakäynti";
+                    
+                    CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(), lastNameField.getText(), phoneNumberField.getText(), emailField.getText(), memberTypeSelected, homeAddressField.getText(), Integer.valueOf(visits.getText()), notesField.getText());
+                }
+            }
+        };
+
+        saveButton.addActionListener(saveListener);
     }
+
 
     private void createPostLoginGUI(ActionEvent e, String enteredUsername, String enteredPassword) {
 

@@ -23,8 +23,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
 
-        CustomerDatabase db = new CustomerDatabase("CustomerDB.db");
-        db.open("CustomerDB.db");
+        CustomerDatabase db = new CustomerDatabase();
 
         Dimension textBoxDimension = new Dimension(200, 20);
 
