@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.awt.TextArea;
@@ -14,7 +15,7 @@ public class EventHandler implements ActionListener {
     private JTextField usernameField;
     private JPasswordField passwordField;
 
-    //This is to dynamically change sizes of all buttons at toolbar at once
+    // This is to dynamically change sizes of all buttons at toolbar at once
     private static int BTNTBAR_HEIGHT = 50;
 
     public EventHandler(JTextField usernameField, JPasswordField passwordField) {
@@ -23,7 +24,6 @@ public class EventHandler implements ActionListener {
     }
 
     private void openHelpWindow() {
-
 
         JLabel ggLabel = new JLabel();
         ggLabel.setText("GYMGATE OY");
@@ -57,7 +57,7 @@ public class EventHandler implements ActionListener {
 
         JFrame helpFrame = new JFrame("Tuki");
         helpFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
+
         closeButton.addActionListener(e -> {
             helpFrame.dispose();
         });
@@ -171,7 +171,6 @@ public class EventHandler implements ActionListener {
         leftPanel.add(saveButton);
         leftPanel.add(Box.createVerticalGlue());
 
-        
         /////////// STUFF IN THE LEFT PANEL ///////////
 
         ///////// STUFF IN THE RIGHT PANEL /////////
@@ -214,7 +213,7 @@ public class EventHandler implements ActionListener {
         addUserFrame.setLocationRelativeTo(null);
         addUserFrame.setVisible(true);
 
-         /*
+        /*
          * This action listener is for the save button.
          */
         ActionListener saveListener = new ActionListener() {
@@ -230,21 +229,24 @@ public class EventHandler implements ActionListener {
 
                     // For now, only monthly customers exist.
                     String memberTypeSelected = "Kuukausijäsenyys";
-                    
-                    CustomerDatabase.getInstance().addCustomerMonthly(firstNameField.getText(), lastNameField.getText(), phoneNumberField.getText(), emailField.getText(), memberTypeSelected, currentDateString, endDateString, homeAddressField.getText(), 0, notesField.getText());
+
+                    CustomerDatabase.getInstance().addCustomerMonthly(firstNameField.getText(), lastNameField.getText(),
+                            phoneNumberField.getText(), emailField.getText(), memberTypeSelected, currentDateString,
+                            endDateString, homeAddressField.getText(), 0, notesField.getText());
                 } else if ((e.getSource() == saveButton) && (membershipType2.isSelected())) {
 
                     // For now, only monthly customers exist.
                     String memberTypeSelected = "Kertakäynti";
-                    
-                    CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(), lastNameField.getText(), phoneNumberField.getText(), emailField.getText(), memberTypeSelected, homeAddressField.getText(), Integer.valueOf(visits.getText()), notesField.getText());
+
+                    CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(), lastNameField.getText(),
+                            phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
+                            homeAddressField.getText(), Integer.valueOf(visits.getText()), notesField.getText());
                 }
             }
         };
 
         saveButton.addActionListener(saveListener);
     }
-
 
     private void createPostLoginGUI(ActionEvent e, String enteredUsername, String enteredPassword) {
 
@@ -270,7 +272,7 @@ public class EventHandler implements ActionListener {
         * 
         */
 
-        if (enteredUsername.equals("testuser") && enteredPassword.equals("testpassword")) {
+        if (CustomerDatabase.getInstance().checkCredentials(enteredUsername, enteredPassword)) {
             // Close the current login frame
             Component component = (Component) e.getSource();
             JFrame frame = (JFrame) SwingUtilities.getRoot(component);
@@ -308,7 +310,7 @@ public class EventHandler implements ActionListener {
 
             URL urlHelp = Main.class.getResource("Help_icon.png");
             ImageIcon helpIcon = new ImageIcon(urlHelp);
-            
+
             Image helpImage = helpIcon.getImage().getScaledInstance(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT, Image.SCALE_SMOOTH);
             ImageIcon helpScaled = new ImageIcon(helpImage);
             JButton helpButton = new JButton(helpScaled);
