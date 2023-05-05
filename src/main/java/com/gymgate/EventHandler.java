@@ -23,6 +23,10 @@ public class EventHandler implements ActionListener {
         this.passwordField = passwordField;
     }
 
+    private void openCustomerView() {
+        new CustomerView();
+    }
+
     private void openHelpWindow() {
 
         JLabel ggLabel = new JLabel();
@@ -201,6 +205,10 @@ public class EventHandler implements ActionListener {
         JButton cancelButton = new JButton("Peruuta");
         rightPanel.add(cancelButton);
         rightPanel.add(Box.createVerticalGlue());
+
+        cancelButton.addActionListener(e -> {
+            addUserFrame.dispose();
+        });
         ///////// STUFF IN THE RIGHT PANE /////////
 
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
@@ -242,6 +250,11 @@ public class EventHandler implements ActionListener {
                             phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
                             homeAddressField.getText(), Integer.valueOf(visits.getText()), notesField.getText());
                 }
+
+                //Close the frame
+                Component component = (Component) e.getSource();
+                JFrame frame = (JFrame) SwingUtilities.getRoot(component);
+                frame.dispose();
             }
         };
 
@@ -266,6 +279,13 @@ public class EventHandler implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 openHelpWindow();
+            }
+        };
+
+        ActionListener viewCustomersButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openCustomerView();
             }
         };
         /*
@@ -307,6 +327,7 @@ public class EventHandler implements ActionListener {
 
             JButton viewCustomersButton = new JButton("Selaa asiakkaita");
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            viewCustomersButton.addActionListener(viewCustomersButtonListener);
 
             URL urlHelp = Main.class.getResource("Help_icon.png");
             ImageIcon helpIcon = new ImageIcon(urlHelp);

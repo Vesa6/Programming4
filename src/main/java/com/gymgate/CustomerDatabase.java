@@ -208,4 +208,16 @@ public class CustomerDatabase {
 
     }
 
+    public ResultSet getCustomers() {
+        
+        //Get all customers from DB
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet results = statement.executeQuery("SELECT * FROM Customers");
+            return results;
+        } catch (SQLException e) {
+            System.out.println("Error getting customers: " + e.getMessage());
+            return null;
+        }
+    }
 }
