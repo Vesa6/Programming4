@@ -73,7 +73,7 @@ public class EventHandler implements ActionListener {
         helpFrame.add(panel);
     }
 
-    private void createAddUserGUI() {
+    public static void createAddUserGUI() {
 
         JFrame addUserFrame = new JFrame("Lisää asiakas");
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

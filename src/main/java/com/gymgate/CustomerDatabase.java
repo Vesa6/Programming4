@@ -223,4 +223,47 @@ public class CustomerDatabase {
             return null;
         }
     }
-}
+
+    public ResultSet getCustomerById(int id) {
+        //Get customer by id
+        try {
+            String getCustomer = "SELECT * FROM Customers WHERE customer_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(getCustomer);
+            preparedStatement.setInt(1, id);
+            ResultSet results = preparedStatement.executeQuery();
+            return results;
+        } catch (SQLException e) {
+            System.out.println("Error getting customer: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public void updateCustomer(int customer_id, String first_name, String last_name, String address, String phone_number, String email, String additional_information, String membership_end, int visits) {
+
+        String updateCustomer = "UPDATE Customers SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, additional_information = ?, membership_end = ?, visits = ? WHERE customer_id = ?";
+    
+        
+        try {    
+
+            PreparedStatement preparedStatement = connection.prepareStatement(updateCustomer);
+            preparedStatement.setString(1, first_name);
+            preparedStatement.setString(2, last_name);
+            preparedStatement.setString(3, address);
+            preparedStatement.setString(4, phone_number);
+            preparedStatement.setString(5, email);
+            preparedStatement.setString(6, additional_information);
+            preparedStatement.setString(7, membership_end);
+            preparedStatement.setInt(8, visits);
+            preparedStatement.setInt(9, customer_id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            
+        } catch (SQLException e) {
+            System.out.println("Error updating customer: " + e.getMessage());
+        }
+   
+    }
+
+    }
+
+
