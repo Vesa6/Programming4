@@ -1,7 +1,6 @@
 package com.gymgate;
 
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -64,6 +63,10 @@ public class CustomerDatabase {
 
             // by default creating admin user while initializing the database
             registerUser("admin", "admin");
+            
+            //Below class is to create a test database with 1000 random customers to test the functionalities of it
+            new DatabaseFiller(1000);
+
 
             return true;
         }
@@ -129,7 +132,7 @@ public class CustomerDatabase {
         }
     }
 
-    public void registerUser(String username, String password) throws SQLException {
+    public void registerUser(String username, String password){
         /* 
          * Registers the username and password (crypted) given as parameters to database
          * Before this it should be checked (with userExists) that username is unique
