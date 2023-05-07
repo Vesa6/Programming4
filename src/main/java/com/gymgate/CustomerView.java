@@ -32,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.Popup;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -356,6 +357,11 @@ public class CustomerView {
                             membershipType2.setEnabled(false);
                             CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"), firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(), phoneNumberField.getText(), emailField.getText(), notesField.getText(), membershipField.getText(), Integer.parseInt(visits.getText()));
                         }
+
+                        HidingPopup popup = new HidingPopup(addUserFrame, "Muutos tallennettu", 2000, "checkMark.png");
+                        popup.showPopup();
+
+                        
                     } catch (NumberFormatException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
@@ -363,6 +369,7 @@ public class CustomerView {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     } 
+
 
                 //Close the frame
                 Component component = (Component) e.getSource();
