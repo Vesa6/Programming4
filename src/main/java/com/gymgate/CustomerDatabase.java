@@ -53,6 +53,8 @@ public class CustomerDatabase {
 
             String createDB = "CREATE TABLE Customers(customer_id INTEGER PRIMARY KEY AUTOINCREMENT, first_name VARCHAR(40) NOT NULL, last_name VARCHAR(40) NOT NULL, phone_number VARCHAR(20) NOT NULL, email VARCHAR(50), membership_type VARCHAR(30), membership_start VARCHAR(100), membership_end VARCHAR(100), address VARCHAR(50), visits INTEGER, additional_information VARCHAR(300))";
             String createUserDB = "CREATE TABLE Users(user_id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(40) NOT NULL, password VARCHAR(40) NOT NULL)";
+            String createEventDB = "CREATE TABLE Events(event_id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, customer_id INTEGER)";
+
             Statement createStatement = connection.createStatement();
             createStatement.executeUpdate(createDB);
             createStatement.close();
@@ -61,12 +63,16 @@ public class CustomerDatabase {
             createUsers.executeUpdate(createUserDB);
             createUsers.close();
 
+            Statement createEvents = connection.createStatement();
+            createEvents.executeUpdate(createEventDB);
+            createEvents.close();
+
             // by default creating admin user while initializing the database
             registerUser("admin", "admin");
-            
-            //Below class is to create a test database with 1000 random customers to test the functionalities of it
-            new DatabaseFiller(1000);
 
+            // Below class is to create a test database with 1000 random customers to test
+            // the functionalities of it
+            new DatabaseFiller(1000);
 
             return true;
         }
@@ -132,12 +138,12 @@ public class CustomerDatabase {
         }
     }
 
-    public void registerUser(String username, String password){
-        /* 
+    public void registerUser(String username, String password) {
+        /*
          * Registers the username and password (crypted) given as parameters to database
          * Before this it should be checked (with userExists) that username is unique
          * 
-        */
+         */
         try {
             byte bytes[] = new byte[13];
             secureRandom.nextBytes(bytes);
@@ -212,8 +218,8 @@ public class CustomerDatabase {
     }
 
     public ResultSet getCustomers() {
-        
-        //Get all customers from DB
+
+        // Get all customers from DB
         try {
             Statement statement = connection.createStatement();
             ResultSet results = statement.executeQuery("SELECT * FROM Customers");
@@ -225,7 +231,7 @@ public class CustomerDatabase {
     }
 
     public ResultSet getCustomerById(int id) {
-        //Get customer by id
+        // Get customer by id
         try {
             String getCustomer = "SELECT * FROM Customers WHERE customer_id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(getCustomer);
@@ -238,12 +244,12 @@ public class CustomerDatabase {
         }
     }
 
-    public void updateCustomer(int customer_id, String first_name, String last_name, String address, String phone_number, String email, String additional_information, String membership_end, int visits) {
+    public void updateCustomer(int customer_id, String first_name, String last_name, String address,
+            String phone_number, String email, String additional_information, String membership_end, int visits) {
 
         String updateCustomer = "UPDATE Customers SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, additional_information = ?, membership_end = ?, visits = ? WHERE customer_id = ?";
-    
-        
-        try {    
+
+        try {
 
             PreparedStatement preparedStatement = connection.prepareStatement(updateCustomer);
             preparedStatement.setString(1, first_name);
@@ -257,13 +263,45 @@ public class CustomerDatabase {
             preparedStatement.setInt(9, customer_id);
             preparedStatement.executeUpdate();
             preparedStatement.close();
-            
+
         } catch (SQLException e) {
             System.out.println("Error updating customer: " + e.getMessage());
         }
-   
-    }
 
     }
 
+    public ResultSet getEvents(int limit) {
 
+        try {
+            Statement statement = connection.createStatement();
+            String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id ORDER BY e.event_id DESC LIMIT "
+                    + limit;
+            ResultSet results = statement.executeQuery(resultQuery);
+            return results;
+
+        } catch (SQLException e) {
+            System.out.println("Error getting events: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public void saveEvent(int customerid, String date) {
+        // This function is to save the every customer visit to DB
+
+        // Gonna implement the decrypt stuff somewhere else so this can be used to fill
+        // database with test data
+        String eventSet = "INSERT INTO Events(date, customer_id) VALUES (?,?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(eventSet);
+            ps.setString(1, date);
+            ps.setInt(2, customerid);
+
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            System.out.println("Error storing an event: " + e.getMessage());
+        }
+
+    }
+
+}
