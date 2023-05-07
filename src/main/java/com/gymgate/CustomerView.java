@@ -3,6 +3,7 @@ package com.gymgate;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -38,13 +39,12 @@ import javax.swing.table.DefaultTableModel;
 
 public class CustomerView {
 
+    public static String confirmationHelper;
 
     CustomerView() {
 
         createCustomerViewGUI();
     }
-
-
 
     private void createCustomerViewGUI() {
 
@@ -93,8 +93,13 @@ public class CustomerView {
                 //This makes the magic only happen with double click
                 //Remove this if it feels unintuitive
 
-                    Object MuokkaaColumn = table.getValueAt(row, 0);
-                    int customerId = Integer.parseInt(MuokkaaColumn.toString());
+                    
+                    String name = table.getValueAt(row, 1).toString();
+
+                    confirmationHelper = name;
+
+                    Object muokkaaColumn = table.getValueAt(row, 0);
+                    int customerId = Integer.parseInt(muokkaaColumn.toString());
     
                     JPopupMenu popupMenu = new JPopupMenu();
                     JMenuItem muokkaaAsiakasta = new JMenuItem("Muokkaa asiakasta");
@@ -113,18 +118,40 @@ public class CustomerView {
                             exception.printStackTrace();
                         }
                         
-                        /*
-                         * 
-                         * OPEN THE MODIFICATION WINDOW HERE
-                         * 
-                         */
-                        
                     });
 
     
                     poistaAsiakas.addActionListener(poista -> {
-                        System.out.println("Poista asiakas: " + customerId);
                         
+                                    ConfirmationPopup confirmPop = new ConfirmationPopup(SwingUtilities.getRootPane(table));
+                                    confirmPop.showPopup();
+
+                                    confirmPop.getYesButton().addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+
+                                            if (CustomerDatabase.getInstance().deleteCustomer(customerId)) {
+
+                                                HidingPopup popup = new HidingPopup(SwingUtilities.getRootPane(table), "Asiakas poistettu", 2000, "checkMark.png");
+                                                popup.showPopup();
+                                                model.removeRow(row);
+                                                confirmPop.dispose();
+                                        } else {
+                                                /*
+                                                 * MITÄ TEHDÄÄN JOS EI ONNISTU?
+                                                 * 
+                                                 */
+                                        }
+                                    }});
+
+                                    confirmPop.getNoButton().addActionListener(new ActionListener() {
+                                        @Override
+                                        public void actionPerformed(ActionEvent e) {
+
+                                            confirmPop.dispose();
+                                        }
+                                    });
+
                     });
             }
         });
@@ -153,10 +180,7 @@ public class CustomerView {
     }
 
 
-
-
     private static void openModifyCustomerView(ResultSet customer) throws SQLException {
-
 
         JFrame addUserFrame = new JFrame("Muokkaa asiakasta");
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
