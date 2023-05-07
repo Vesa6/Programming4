@@ -1,7 +1,5 @@
 package com.gymgate;
-
 import java.util.Random;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -111,6 +109,7 @@ public class DatabaseFiller {
                         phoneNumber, email, mType,
                         address, visits, " ");
             }
+        System.out.println("Customer " + i + " added");
 
         }
         System.out.println("Added " + qty + " test users in total.");
@@ -145,6 +144,7 @@ public class DatabaseFiller {
             String date = getRandomVisitDates();
             int cuId = getRandomCustomerId(qty);
             CustomerDatabase.getInstance().saveEvent(cuId, date);
+            System.out.println("Event " + i + " added");
         }
         System.out.println("Added " + qty + " test events in total.");
 
@@ -155,10 +155,9 @@ public class DatabaseFiller {
         LocalDateTime end = LocalDateTime.of(2025, 1, 1, 0, 0, 0);
         long randomsecond = ThreadLocalRandom.current().nextLong(start.toEpochSecond(ZoneOffset.UTC),
                 end.toEpochSecond(ZoneOffset.UTC));
-        int randomnano = ThreadLocalRandom.current().nextInt(0, 999_999_999 + 1);
-        Instant instant = Instant.ofEpochSecond(randomsecond, randomnano);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        String visitDate = instant.atOffset(ZoneOffset.UTC).format(formatter);
+        LocalDateTime randomDateTime = LocalDateTime.ofEpochSecond(randomsecond, 0, ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss");
+        String visitDate = randomDateTime.format(formatter);
         return visitDate;
     }
 

@@ -27,6 +27,10 @@ public class EventHandler implements ActionListener {
         new CustomerView();
     }
 
+    private void openEventViewer(){
+        new EventViewer();
+    }
+
     private void openHelpWindow() {
 
         JLabel ggLabel = new JLabel();
@@ -288,6 +292,13 @@ public class EventHandler implements ActionListener {
                 openCustomerView();
             }
         };
+
+        ActionListener viewEventsButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openEventViewer();
+            }
+        };
         /*
         * 
         */
@@ -324,6 +335,7 @@ public class EventHandler implements ActionListener {
 
             JButton viewLogsButton = new JButton("Selaa tapahtumia");
             viewLogsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            viewLogsButton.addActionListener(viewEventsButtonListener);
 
             JButton viewCustomersButton = new JButton("Selaa asiakkaita");
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);

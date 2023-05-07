@@ -72,7 +72,7 @@ public class CustomerDatabase {
 
             // Below class is to create a test database with 1000 random customers to test
             // the functionalities of it
-            new DatabaseFiller(1000);
+            new DatabaseFiller(10);
 
             return true;
         }
@@ -270,12 +270,11 @@ public class CustomerDatabase {
 
     }
 
-    public ResultSet getEvents(int limit) {
+    public ResultSet getEvents() {
 
         try {
             Statement statement = connection.createStatement();
-            String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id ORDER BY e.event_id DESC LIMIT "
-                    + limit;
+            String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id ORDER BY e.event_id DESC";
             ResultSet results = statement.executeQuery(resultQuery);
             return results;
 
@@ -304,22 +303,18 @@ public class CustomerDatabase {
 
     }
 
-    public boolean deleteCustomer(int customerId) {
 
-        String deleteCustomer = "DELETE FROM Customers WHERE customer_id = ?";
-
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(deleteCustomer);
-            preparedStatement.setInt(1, customerId);
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-            return true;
-        } catch (SQLException e) {
-            System.out.println("Error deleting customer: " + e.getMessage());
-            return false;
+    public ResultSet selectEventDate(String startDate, String endDate){
+        try{
+        Statement statement = connection.createStatement();
+        String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id WHERE e.date BETWEEN " +
+        "'" + startDate + "'" + " AND " + "'" + endDate + "'" + " ORDER BY e.event_id DESC";
+        ResultSet results = statement.executeQuery(resultQuery);
+        return results;
+        }catch(SQLException e){
+            System.out.println("Error getting events between given dates: " + e.getMessage());
+            return null;
         }
-
-        
 
     }
 
