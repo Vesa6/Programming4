@@ -304,4 +304,23 @@ public class CustomerDatabase {
 
     }
 
+    public boolean deleteCustomer(int customerId) {
+
+        String deleteCustomer = "DELETE FROM Customers WHERE customer_id = ?";
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(deleteCustomer);
+            preparedStatement.setInt(1, customerId);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            return true;
+        } catch (SQLException e) {
+            System.out.println("Error deleting customer: " + e.getMessage());
+            return false;
+        }
+
+        
+
+    }
+
 }
