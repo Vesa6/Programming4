@@ -303,6 +303,7 @@ public class CustomerDatabase {
 
     }
 
+
     public ResultSet selectEventDate(String startDate, String endDate){
         try{
         Statement statement = connection.createStatement();
@@ -314,6 +315,7 @@ public class CustomerDatabase {
             System.out.println("Error getting events between given dates: " + e.getMessage());
             return null;
         }
+
     }
 
 }
