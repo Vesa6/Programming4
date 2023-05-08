@@ -299,6 +299,13 @@ public class EventHandler implements ActionListener {
                 openEventViewer();
             }
         };
+
+        ActionListener menuButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                System.out.println("Menu avattu jeejeeejee");
+            }
+        };
         /*
         * 
         */
@@ -341,26 +348,30 @@ public class EventHandler implements ActionListener {
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             viewCustomersButton.addActionListener(viewCustomersButtonListener);
 
-            URL urlHelp = Main.class.getResource("Help_icon.png");
-            ImageIcon helpIcon = new ImageIcon(urlHelp);
 
-            Image helpImage = helpIcon.getImage().getScaledInstance(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT, Image.SCALE_SMOOTH);
-            ImageIcon helpScaled = new ImageIcon(helpImage);
-            JButton helpButton = new JButton(helpScaled);
-            // helpButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+            JButton helpButton = new JButton(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
             helpButton.setBorder(BorderFactory.createEmptyBorder());
             helpButton.setContentAreaFilled(false);
             helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
             helpButton.addActionListener(helpButtonListener);
 
+            JButton menuButton = new JButton (iconFactory("Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+            menuButton.setBorder(BorderFactory.createEmptyBorder());
+            menuButton.setContentAreaFilled(false);
+            menuButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+            menuButton.addActionListener(menuButtonListener);
+
             JPanel toolPanel = new JPanel();
             toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.X_AXIS));
-            Box rightBox = Box.createHorizontalBox();
-            rightBox.add(Box.createHorizontalGlue());
-            rightBox.add(helpButton);
-            rightBox.add(Box.createRigidArea(new Dimension(200, 0)));
+            Box tpBox = Box.createHorizontalBox();
+            tpBox.add(Box.createHorizontalGlue());
+            tpBox.add(menuButton);
+            tpBox.add(Box.createRigidArea(new Dimension(1550, 0)));
+            tpBox.add(Box.createHorizontalGlue());
+            tpBox.add(helpButton);
+            tpBox.add(Box.createRigidArea(new Dimension(200, 0)));
 
-            toolPanel.add(rightBox);
+            toolPanel.add(tpBox);
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -389,5 +400,14 @@ public class EventHandler implements ActionListener {
 
         createPostLoginGUI(e, enteredUsername, enteredPassword);
 
+    }
+
+    public ImageIcon iconFactory(String iName, int iHeight, int iWidth){
+        URL urlImg = Main.class.getResource(iName);
+        ImageIcon imgIcon = new ImageIcon(urlImg);
+        Image img = imgIcon.getImage().getScaledInstance(iHeight, iWidth, Image.SCALE_SMOOTH);
+        ImageIcon imgScaled = new ImageIcon(img);
+
+        return imgScaled;
     }
 }
