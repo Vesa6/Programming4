@@ -1,6 +1,8 @@
 package com.gymgate;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -299,13 +301,6 @@ public class EventHandler implements ActionListener {
                 openEventViewer();
             }
         };
-
-        ActionListener menuButtonListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                System.out.println("Menu avattu jeejeeejee");
-            }
-        };
         /*
         * 
         */
@@ -349,29 +344,65 @@ public class EventHandler implements ActionListener {
             viewCustomersButton.addActionListener(viewCustomersButtonListener);
 
 
-            JButton helpButton = new JButton(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+/*             JButton helpButton = new JButton(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
             helpButton.setBorder(BorderFactory.createEmptyBorder());
             helpButton.setContentAreaFilled(false);
             helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            helpButton.addActionListener(helpButtonListener);
+            helpButton.addActionListener(helpButtonListener); */
 
-            JButton menuButton = new JButton (iconFactory("Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            menuButton.setBorder(BorderFactory.createEmptyBorder());
-            menuButton.setContentAreaFilled(false);
-            menuButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            menuButton.addActionListener(menuButtonListener);
+            JMenuBar mb = new JMenuBar();
+            JMenu menu = new JMenu("");
+            menu.setIcon(iconFactory("Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+            //JMenuItem sendHelp = new JMenuItem("");
+            //sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+            //sendHelp.addActionListener(helpButtonListener);
+            JMenu manage = new JMenu("Asiakkaiden hallinta");
+            JMenuItem adder, browser, events;
+            events = new JMenuItem("Tapahtumat");
+            events.addActionListener(viewEventsButtonListener);
+            adder = new JMenuItem("Lisää asiakas");
+            adder.addActionListener(addUserButtonListener);
+            browser = new JMenuItem("Selaa asiakkaita");
+            browser.addActionListener(viewEventsButtonListener);
+            menu.add(manage);
+            menu.add(events);
+            manage.add(adder);manage.add(browser);
+            mb.add(menu);
+            //JSeparator sep = new JSeparator();
+            //sep.setForeground(Color.white);
+            //mb.add(sep);
+            //mb.add(sendHelp);
 
-            JPanel toolPanel = new JPanel();
+            JButton sendHelp = new JButton("");
+            sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+            sendHelp.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+            sendHelp.setMargin(new Insets(2, 2, 2, 2));
+            sendHelp.setBorderPainted(false);
+            //Border border = BorderFactory.createEmptyBorder(2,2,2,2);
+            //sendHelp.setBorder(border);
+            sendHelp.setContentAreaFilled(false);
+            sendHelp.addActionListener(helpButtonListener);
+            JSeparator sep = new JSeparator();
+            sep.setForeground(Color.white);
+            mb.add(sep);
+            mb.add(sendHelp);
+
+            newView.setJMenuBar(mb); 
+
+
+
+/*             JPanel toolPanel = new JPanel();
             toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.X_AXIS));
             Box tpBox = Box.createHorizontalBox();
             tpBox.add(Box.createHorizontalGlue());
-            tpBox.add(menuButton);
+            //tpBox.add(menuButton);
+            
             tpBox.add(Box.createRigidArea(new Dimension(1550, 0)));
             tpBox.add(Box.createHorizontalGlue());
             tpBox.add(helpButton);
             tpBox.add(Box.createRigidArea(new Dimension(200, 0)));
 
-            toolPanel.add(tpBox);
+            toolPanel.add(tpBox); */
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -386,7 +417,7 @@ public class EventHandler implements ActionListener {
             mainPanel.add(Box.createVerticalStrut(200)); // Add a 200-pixel vertical space at the bottom
 
             newView.add(mainPanel, BorderLayout.CENTER);
-            newView.add(toolPanel, BorderLayout.NORTH);
+            //newView.add(toolPanel, BorderLayout.NORTH);
             newView.setExtendedState(JFrame.MAXIMIZED_BOTH);
             newView.setLocationRelativeTo(null);
             newView.setVisible(true);
