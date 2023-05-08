@@ -30,7 +30,6 @@ import javax.swing.table.DefaultTableModel;
 public class EventViewer {
     private JTextField startDateField;
     private JTextField endDateField;
-    private DefaultTableModel model;
     private JTable table;
 
     public EventViewer() {
@@ -70,7 +69,7 @@ public class EventViewer {
         ActionListener resetButtonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                DefaultEventTableLabels(table);
+                defaultEventTableLabels(table);
             }
 
         };
@@ -106,7 +105,7 @@ public class EventViewer {
         table.getColumnModel().getColumn(0).setMaxWidth(defaultWidth);
         table.getColumnModel().getColumn(1).setMaxWidth(defaultWidth);
         table.getColumnModel().getColumn(3).setMaxWidth(defaultWidth);
-        DefaultEventTableLabels(table);
+        defaultEventTableLabels(table);
 
         return table;
     }
@@ -168,7 +167,7 @@ public class EventViewer {
 
     }
 
-    private static void DefaultEventTableLabels(JTable table) {
+    private static void defaultEventTableLabels(JTable table) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 

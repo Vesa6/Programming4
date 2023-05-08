@@ -335,4 +335,18 @@ public class CustomerDatabase {
         }
     }
 
+    public ResultSet searchByName(String firstName, String lastName){
+        try{
+            String resultQuery = "SELECT * FROM Customers WHERE first_name = ? AND last_name = ?";
+            PreparedStatement ps = connection.prepareStatement(resultQuery);
+            ps.setString(1, firstName);
+            ps.setString(2, lastName);
+            ResultSet results = ps.executeQuery();
+            return results;
+            }catch(SQLException e){
+                System.out.println("Error getting events between given dates: " + e.getMessage());
+                return null;
+            }
+    }
+
 }

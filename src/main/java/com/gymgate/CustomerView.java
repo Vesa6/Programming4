@@ -40,6 +40,8 @@ import javax.swing.table.DefaultTableModel;
 public class CustomerView {
 
     public static String confirmationHelper;
+    private JTextField nameField;
+    private JTable table;
 
     CustomerView() {
 
@@ -56,11 +58,40 @@ public class CustomerView {
         frame.setSize(frameWidth, frameHeight);
         frame.setLocationRelativeTo(null);
 
-        JTable table = getCustomerTableLabels();
+        table = getCustomerTableLabels();
 
+        JPanel searchPanel = new JPanel();
+        nameField = new JTextField();
+        nameField.setPreferredSize(new Dimension(80, 20));
+        JButton searchButton = new JButton("Hae");
+        JButton resetButton = new JButton("Nollaa");
+        ActionListener searchButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String name = nameField.getText();
+                updateCustomerTableLabels(table, name);
+            }
+
+        };
+        ActionListener resetButtonListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                defaultCustomerTableLabels(table);
+            }
+
+        };
+        searchButton.addActionListener(searchButtonListener);
+        resetButton.addActionListener(resetButtonListener);
+
+
+        searchPanel.add(new JLabel("Hae nimellä: "));
+        searchPanel.add(nameField);
+        searchPanel.add(searchButton);
+        searchPanel.add(resetButton);
         //This is a workaround to make the table uneditable without overriding the base class.
         table.setDefaultEditor(Object.class, null);
         JScrollPane scrollPane = new JScrollPane(table);
+        frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         frame.setVisible(true);
@@ -156,7 +187,7 @@ public class CustomerView {
             }
         });
 
-        try {
+/*         try {
 
         ResultSet resultSet = CustomerDatabase.getInstance().getCustomers();
 
@@ -173,7 +204,9 @@ public class CustomerView {
             }
         } catch (SQLException e) {
             System.out.println("Error retrieving customers from DB " + e.getMessage());
-        }
+        } */
+        defaultCustomerTableLabels(table);
+
     
         return table;
         
@@ -404,6 +437,57 @@ public class CustomerView {
     };
     
     saveButton.addActionListener(saveListener);   
+}
+
+
+private static void defaultCustomerTableLabels(JTable table) {
+    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    model.setRowCount(0);
+    try {
+
+        ResultSet resultSet = CustomerDatabase.getInstance().getCustomers();
+
+            while (resultSet.next()) {
+                int customerId = resultSet.getInt("customer_id");
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+
+                Object[] rowData = {
+                    customerId, firstName.concat(" " + lastName), " Muokkaa ..."
+                };
+
+                model.addRow(rowData);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving customers from DB " + e.getMessage());
+        }
+
+}
+
+private static void updateCustomerTableLabels(JTable table, String name) {
+    String temp[] = name.split(" ", 2); // splits into first name and last name
+    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    model.setRowCount(0);
+
+    try {
+
+        ResultSet resultSet = CustomerDatabase.getInstance().searchByName(temp[0], temp[1]);
+
+        while (resultSet.next()) {
+            int customerId = resultSet.getInt("customer_id");
+            String firstName = resultSet.getString("first_name");
+            String lastName = resultSet.getString("last_name");
+
+            Object[] rowData = {
+                customerId, firstName.concat(" " + lastName), " Muokkaa ..."
+            };
+
+            model.addRow(rowData);
+        }
+    } catch (SQLException e) {
+        System.out.println("Error retrieving customers from DB " + e.getMessage());
+    }
+
 }
 }
 
