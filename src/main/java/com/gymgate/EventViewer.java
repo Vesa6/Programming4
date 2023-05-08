@@ -46,8 +46,6 @@ public class EventViewer {
         frame.setSize(frameWidth, frameHeight);
         frame.setLocationRelativeTo(null);
 
-
-
         table = getEventTableLabels();
 
         JPanel searchPanel = new JPanel();
@@ -75,7 +73,6 @@ public class EventViewer {
         };
         searchButton.addActionListener(searchButtonListener);
         resetButton.addActionListener(resetButtonListener);
-
 
         searchPanel.add(new JLabel("Aloitus"));
         searchPanel.add(startDateField);
@@ -109,8 +106,6 @@ public class EventViewer {
 
         return table;
     }
-
-
 
     private static String formatDateToDisplay(String uDate) {
         SimpleDateFormat toFormat = new SimpleDateFormat("yyyy-MM-dd");

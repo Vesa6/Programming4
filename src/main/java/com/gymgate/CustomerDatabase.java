@@ -303,16 +303,15 @@ public class CustomerDatabase {
 
     }
 
-
-    public ResultSet selectEventDate(String startDate, String endDate){
-        try{
-        String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id WHERE e.date BETWEEN ? AND ? ORDER BY e.event_id DESC";
-        PreparedStatement ps = connection.prepareStatement(resultQuery);
-        ps.setString(1, startDate);
-        ps.setString(2, endDate);
-        ResultSet results = ps.executeQuery();
-        return results;
-        }catch(SQLException e){
+    public ResultSet selectEventDate(String startDate, String endDate) {
+        try {
+            String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id WHERE e.date BETWEEN ? AND ? ORDER BY e.event_id DESC";
+            PreparedStatement ps = connection.prepareStatement(resultQuery);
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            ResultSet results = ps.executeQuery();
+            return results;
+        } catch (SQLException e) {
             System.out.println("Error getting events between given dates: " + e.getMessage());
             return null;
         }
@@ -335,18 +334,18 @@ public class CustomerDatabase {
         }
     }
 
-    public ResultSet searchByName(String firstName, String lastName){
-        try{
+    public ResultSet searchByName(String firstName, String lastName) {
+        try {
             String resultQuery = "SELECT * FROM Customers WHERE first_name = ? AND last_name = ?";
             PreparedStatement ps = connection.prepareStatement(resultQuery);
             ps.setString(1, firstName);
             ps.setString(2, lastName);
             ResultSet results = ps.executeQuery();
             return results;
-            }catch(SQLException e){
-                System.out.println("Error getting events between given dates: " + e.getMessage());
-                return null;
-            }
+        } catch (SQLException e) {
+            System.out.println("Error getting events between given dates: " + e.getMessage());
+            return null;
+        }
     }
 
 }

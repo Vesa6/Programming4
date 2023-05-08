@@ -83,12 +83,12 @@ public class CustomerView {
         searchButton.addActionListener(searchButtonListener);
         resetButton.addActionListener(resetButtonListener);
 
-
         searchPanel.add(new JLabel("Hae nimellä: "));
         searchPanel.add(nameField);
         searchPanel.add(searchButton);
         searchPanel.add(resetButton);
-        //This is a workaround to make the table uneditable without overriding the base class.
+        // This is a workaround to make the table uneditable without overriding the base
+        // class.
         table.setDefaultEditor(Object.class, null);
         JScrollPane scrollPane = new JScrollPane(table);
         frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
@@ -101,7 +101,7 @@ public class CustomerView {
     private static JTable getCustomerTableLabels() {
 
         String[] columnNames = {
-            "ID", "NIMI", " "
+                "ID", "NIMI", " "
         };
 
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
@@ -115,103 +115,83 @@ public class CustomerView {
             public void mouseClicked(MouseEvent e) {
                 int row = table.rowAtPoint(e.getPoint());
                 int column = table.columnAtPoint(e.getPoint());
-    
-                //This is the only column that has a popup menu
+
+                // This is the only column that has a popup menu
                 if (column != 2) {
                     return;
                 }
-    
-                //This makes the magic only happen with double click
-                //Remove this if it feels unintuitive
 
-                    
-                    String name = table.getValueAt(row, 1).toString();
+                // This makes the magic only happen with double click
+                // Remove this if it feels unintuitive
 
-                    confirmationHelper = name;
+                String name = table.getValueAt(row, 1).toString();
 
-                    Object muokkaaColumn = table.getValueAt(row, 0);
-                    int customerId = Integer.parseInt(muokkaaColumn.toString());
-    
-                    JPopupMenu popupMenu = new JPopupMenu();
-                    JMenuItem muokkaaAsiakasta = new JMenuItem("Muokkaa asiakasta");
-                    JMenuItem poistaAsiakas = new JMenuItem("Poista asiakas");
-                    popupMenu.add(muokkaaAsiakasta);
-                    popupMenu.add(poistaAsiakas);
-    
-                    popupMenu.show(table, e.getX(), e.getY());
+                confirmationHelper = name;
 
-                    muokkaaAsiakasta.addActionListener(muokkaa -> {
-                        
-                        try {
-                            openModifyCustomerView(CustomerDatabase.getInstance().getCustomerById(customerId));
-                        } catch (SQLException exception) {
-                            // TODO Auto-generated catch block
-                            exception.printStackTrace();
+                Object muokkaaColumn = table.getValueAt(row, 0);
+                int customerId = Integer.parseInt(muokkaaColumn.toString());
+
+                JPopupMenu popupMenu = new JPopupMenu();
+                JMenuItem muokkaaAsiakasta = new JMenuItem("Muokkaa asiakasta");
+                JMenuItem poistaAsiakas = new JMenuItem("Poista asiakas");
+                popupMenu.add(muokkaaAsiakasta);
+                popupMenu.add(poistaAsiakas);
+
+                popupMenu.show(table, e.getX(), e.getY());
+
+                muokkaaAsiakasta.addActionListener(muokkaa -> {
+
+                    try {
+                        openModifyCustomerView(CustomerDatabase.getInstance().getCustomerById(customerId));
+                    } catch (SQLException exception) {
+                        // TODO Auto-generated catch block
+                        exception.printStackTrace();
+                    }
+
+                });
+
+                poistaAsiakas.addActionListener(poista -> {
+
+                    ConfirmationPopup confirmPop = new ConfirmationPopup(SwingUtilities.getRootPane(table));
+                    confirmPop.showPopup();
+
+                    confirmPop.getYesButton().addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+
+                            if (CustomerDatabase.getInstance().deleteCustomer(customerId)) {
+
+                                HidingPopup popup = new HidingPopup(SwingUtilities.getRootPane(table),
+                                        "Asiakas poistettu", 2000, "checkMark.png");
+                                popup.showPopup();
+                                model.removeRow(row);
+                                confirmPop.dispose();
+                            } else {
+                                /*
+                                 * MITÄ TEHDÄÄN JOS EI ONNISTU?
+                                 * 
+                                 */
+                            }
                         }
-                        
                     });
 
-    
-                    poistaAsiakas.addActionListener(poista -> {
-                        
-                                    ConfirmationPopup confirmPop = new ConfirmationPopup(SwingUtilities.getRootPane(table));
-                                    confirmPop.showPopup();
+                    confirmPop.getNoButton().addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
 
-                                    confirmPop.getYesButton().addActionListener(new ActionListener() {
-                                        @Override
-                                        public void actionPerformed(ActionEvent e) {
-
-                                            if (CustomerDatabase.getInstance().deleteCustomer(customerId)) {
-
-                                                HidingPopup popup = new HidingPopup(SwingUtilities.getRootPane(table), "Asiakas poistettu", 2000, "checkMark.png");
-                                                popup.showPopup();
-                                                model.removeRow(row);
-                                                confirmPop.dispose();
-                                        } else {
-                                                /*
-                                                 * MITÄ TEHDÄÄN JOS EI ONNISTU?
-                                                 * 
-                                                 */
-                                        }
-                                    }});
-
-                                    confirmPop.getNoButton().addActionListener(new ActionListener() {
-                                        @Override
-                                        public void actionPerformed(ActionEvent e) {
-
-                                            confirmPop.dispose();
-                                        }
-                                    });
-
+                            confirmPop.dispose();
+                        }
                     });
+
+                });
             }
         });
 
-/*         try {
-
-        ResultSet resultSet = CustomerDatabase.getInstance().getCustomers();
-
-            while (resultSet.next()) {
-                int customerId = resultSet.getInt("customer_id");
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-
-                Object[] rowData = {
-                    customerId, firstName.concat(" " + lastName), " Muokkaa ..."
-                };
-
-                model.addRow(rowData);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error retrieving customers from DB " + e.getMessage());
-        } */
         defaultCustomerTableLabels(table);
 
-    
         return table;
-        
-    }
 
+    }
 
     private static void openModifyCustomerView(ResultSet customer) throws SQLException {
 
@@ -283,7 +263,6 @@ public class CustomerView {
 
         JRadioButton membershipType = new JRadioButton("Kuukausijäsenyys");
         JRadioButton membershipType2 = new JRadioButton("Kertakäynti");
-        
 
         /*
          * This action listener is for the radio buttons.
@@ -323,12 +302,12 @@ public class CustomerView {
         if (customer.getString("membership_type").equals("Kuukausijäsenyys")) {
             membershipType2.setEnabled(false);
             membershipType.setSelected(true);
-            
+
             leftPanel.add(new JLabel("Jäsenyys päättyy:"));
             leftPanel.add(membershipField);
             leftPanel.add(Box.createVerticalGlue());
             leftPanel.remove(membershipType);
-            
+
         } else {
             membershipType2.setSelected(true);
             visits.setText(customer.getString("visits"));
@@ -396,7 +375,6 @@ public class CustomerView {
         addUserFrame.setLocationRelativeTo(null);
         addUserFrame.setVisible(true);
 
-
         /*
          * This action listener is for the save button.
          */
@@ -409,43 +387,46 @@ public class CustomerView {
                     try {
                         String membershipType = customer.getString("membership_type");
                         if (membershipType.equals("Kuukausijäsenyys")) {
-                            CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"), firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(), phoneNumberField.getText(), emailField.getText(), notesField.getText(), membershipField.getText(), 0);
+                            CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"),
+                                    firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(),
+                                    phoneNumberField.getText(), emailField.getText(), notesField.getText(),
+                                    membershipField.getText(), 0);
                         } else if (customer.getString("membership_type").equals("Kertakäynti")) {
                             membershipType2.setEnabled(false);
-                            CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"), firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(), phoneNumberField.getText(), emailField.getText(), notesField.getText(), membershipField.getText(), Integer.parseInt(visits.getText()));
+                            CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"),
+                                    firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(),
+                                    phoneNumberField.getText(), emailField.getText(), notesField.getText(),
+                                    membershipField.getText(), Integer.parseInt(visits.getText()));
                         }
 
                         HidingPopup popup = new HidingPopup(addUserFrame, "Muutos tallennettu", 2000, "checkMark.png");
                         popup.showPopup();
 
-                        
                     } catch (NumberFormatException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     } catch (SQLException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
-                    } 
+                    }
 
-
-                //Close the frame
-                Component component = (Component) e.getSource();
-                JFrame frame = (JFrame) SwingUtilities.getRoot(component);
-                frame.dispose();
+                    // Close the frame
+                    Component component = (Component) e.getSource();
+                    JFrame frame = (JFrame) SwingUtilities.getRoot(component);
+                    frame.dispose();
+                }
             }
-        } 
-    };
-    
-    saveButton.addActionListener(saveListener);   
-}
+        };
 
+        saveButton.addActionListener(saveListener);
+    }
 
-private static void defaultCustomerTableLabels(JTable table) {
-    DefaultTableModel model = (DefaultTableModel) table.getModel();
-    model.setRowCount(0);
-    try {
+    private static void defaultCustomerTableLabels(JTable table) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        try {
 
-        ResultSet resultSet = CustomerDatabase.getInstance().getCustomers();
+            ResultSet resultSet = CustomerDatabase.getInstance().getCustomers();
 
             while (resultSet.next()) {
                 int customerId = resultSet.getInt("customer_id");
@@ -453,7 +434,7 @@ private static void defaultCustomerTableLabels(JTable table) {
                 String lastName = resultSet.getString("last_name");
 
                 Object[] rowData = {
-                    customerId, firstName.concat(" " + lastName), " Muokkaa ..."
+                        customerId, firstName.concat(" " + lastName), " Muokkaa ..."
                 };
 
                 model.addRow(rowData);
@@ -462,32 +443,31 @@ private static void defaultCustomerTableLabels(JTable table) {
             System.out.println("Error retrieving customers from DB " + e.getMessage());
         }
 
-}
-
-private static void updateCustomerTableLabels(JTable table, String name) {
-    String temp[] = name.split(" ", 2); // splits into first name and last name
-    DefaultTableModel model = (DefaultTableModel) table.getModel();
-    model.setRowCount(0);
-
-    try {
-
-        ResultSet resultSet = CustomerDatabase.getInstance().searchByName(temp[0], temp[1]);
-
-        while (resultSet.next()) {
-            int customerId = resultSet.getInt("customer_id");
-            String firstName = resultSet.getString("first_name");
-            String lastName = resultSet.getString("last_name");
-
-            Object[] rowData = {
-                customerId, firstName.concat(" " + lastName), " Muokkaa ..."
-            };
-
-            model.addRow(rowData);
-        }
-    } catch (SQLException e) {
-        System.out.println("Error retrieving customers from DB " + e.getMessage());
     }
 
-}
-}
+    private static void updateCustomerTableLabels(JTable table, String name) {
+        String temp[] = name.split(" ", 2); // splits into first name and last name
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
 
+        try {
+
+            ResultSet resultSet = CustomerDatabase.getInstance().searchByName(temp[0], temp[1]);
+
+            while (resultSet.next()) {
+                int customerId = resultSet.getInt("customer_id");
+                String firstName = resultSet.getString("first_name");
+                String lastName = resultSet.getString("last_name");
+
+                Object[] rowData = {
+                        customerId, firstName.concat(" " + lastName), " Muokkaa ..."
+                };
+
+                model.addRow(rowData);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving customers from DB " + e.getMessage());
+        }
+
+    }
+}
