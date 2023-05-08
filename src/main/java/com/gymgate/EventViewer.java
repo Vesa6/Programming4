@@ -47,6 +47,10 @@ public class EventViewer {
         frame.setSize(frameWidth, frameHeight);
         frame.setLocationRelativeTo(null);
 
+
+
+        table = getEventTableLabels();
+
         JPanel searchPanel = new JPanel();
         startDateField = new JTextField();
         startDateField.setPreferredSize(new Dimension(60, 20));
@@ -66,9 +70,7 @@ public class EventViewer {
         ActionListener resetButtonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                String startDate = "01.01.1900";
-                String endDate = "01.01.2500";
-                updateEventTableLabels(table, startDate, endDate);
+                DefaultEventTableLabels(table);
             }
 
         };
@@ -82,8 +84,6 @@ public class EventViewer {
         searchPanel.add(endDateField);
         searchPanel.add(searchButton);
         searchPanel.add(resetButton);
-
-        table = getEventTableLabels();
 
         table.setDefaultEditor(Object.class, null);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -106,31 +106,12 @@ public class EventViewer {
         table.getColumnModel().getColumn(0).setMaxWidth(defaultWidth);
         table.getColumnModel().getColumn(1).setMaxWidth(defaultWidth);
         table.getColumnModel().getColumn(3).setMaxWidth(defaultWidth);
-
-        try {
-
-            ResultSet resultSet = CustomerDatabase.getInstance().getEvents();
-
-            while (resultSet.next()) {
-                String temp = resultSet.getString("date");
-                String name = resultSet.getString("name");
-                int customerId = resultSet.getInt("customer_id");
-
-                String[] dateTime = temp.split("T");
-                String date = formatDateToDisplay(dateTime[0]);
-
-                Object[] rowData = {
-                        date, dateTime[1], name, customerId
-                };
-
-                model.addRow(rowData);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error retrieving customers from DB " + e.getMessage());
-        }
+        DefaultEventTableLabels(table);
 
         return table;
     }
+
+
 
     private static String formatDateToDisplay(String uDate) {
         SimpleDateFormat toFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -153,9 +134,7 @@ public class EventViewer {
             System.out.println("Error on parsing datetime for events " + pe.getMessage());
         }
         SimpleDateFormat formatted = new SimpleDateFormat("yyyy-MM-dd");
-        System.out.println(formatted.format(datetemp));
         String temp = formatted.format(datetemp) + "T00:00:00";
-        System.out.println(temp);
         return temp;
     }
 
@@ -168,6 +147,34 @@ public class EventViewer {
         try {
 
             ResultSet resultSet = CustomerDatabase.getInstance().selectEventDate(start, end);
+
+            while (resultSet.next()) {
+                String temp = resultSet.getString("date");
+                String name = resultSet.getString("name");
+                int customerId = resultSet.getInt("customer_id");
+
+                String[] dateTime = temp.split("T");
+                String date = formatDateToDisplay(dateTime[0]);
+
+                Object[] rowData = {
+                        date, dateTime[1], name, customerId
+                };
+
+                model.addRow(rowData);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving customers from DB " + e.getMessage());
+        }
+
+    }
+
+    private static void DefaultEventTableLabels(JTable table) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+
+        try {
+
+            ResultSet resultSet = CustomerDatabase.getInstance().getEvents();
 
             while (resultSet.next()) {
                 String temp = resultSet.getString("date");
