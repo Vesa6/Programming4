@@ -6,26 +6,19 @@ import java.awt.*;
 
 public class ConfirmationPopup extends JDialog {
 
-    private int choice = 0;
     private JButton yesButton;
     private JButton noButton;
 
-    public ConfirmationPopup(Component parentComponent) {
-        super(SwingUtilities.getWindowAncestor(parentComponent));
-
+    public ConfirmationPopup(Component comp) {
+        super(SwingUtilities.getWindowAncestor(comp));
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        JPanel contentPanel = new JPanel();
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        int topPadding = 10;
-        int leftPadding = 10;
-        int bottomPadding = 10;
-        int rightPadding = 10;
-        contentPanel.setBorder(new EmptyBorder(topPadding, leftPadding, bottomPadding, rightPadding));
-
-        JLabel messageLabel = new JLabel("Haluatko varmasti poistaa asiakkaan " + CustomerView.confirmationHelper + "?");
-        messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel msgLabel = new JLabel("Haluatko varmasti poistaa asiakkaan " + CustomerView.confirmationHelper + "?");
+        msgLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         yesButton = new JButton("Kyllä");
 
@@ -36,16 +29,16 @@ public class ConfirmationPopup extends JDialog {
         buttonPanel.add(yesButton);
         buttonPanel.add(noButton);
 
-        contentPanel.add(Box.createVerticalGlue());
-        contentPanel.add(messageLabel);
-        contentPanel.add(Box.createVerticalGlue());
-        contentPanel.add(buttonPanel);
-        contentPanel.add(Box.createVerticalGlue());
+        panel.add(Box.createVerticalGlue());
+        panel.add(msgLabel);
+        panel.add(Box.createVerticalGlue());
+        panel.add(buttonPanel);
+        panel.add(Box.createVerticalGlue());
 
-        add(contentPanel);
+        add(panel);
 
         pack();
-        setLocationRelativeTo(parentComponent);
+        setLocationRelativeTo(comp);
     }
 
     public void showPopup() {

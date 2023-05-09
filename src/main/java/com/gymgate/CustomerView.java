@@ -87,6 +87,7 @@ public class CustomerView {
         searchPanel.add(nameField);
         searchPanel.add(searchButton);
         searchPanel.add(resetButton);
+
         // This is a workaround to make the table uneditable without overriding the base
         // class.
         table.setDefaultEditor(Object.class, null);
@@ -120,9 +121,6 @@ public class CustomerView {
                 if (column != 2) {
                     return;
                 }
-
-                // This makes the magic only happen with double click
-                // Remove this if it feels unintuitive
 
                 String name = table.getValueAt(row, 1).toString();
 
@@ -167,10 +165,7 @@ public class CustomerView {
                                 model.removeRow(row);
                                 confirmPop.dispose();
                             } else {
-                                /*
-                                 * MITÄ TEHDÄÄN JOS EI ONNISTU?
-                                 * 
-                                 */
+                                
                             }
                         }
                     });
@@ -195,17 +190,17 @@ public class CustomerView {
 
     private static void openModifyCustomerView(ResultSet customer) throws SQLException {
 
-        JFrame addUserFrame = new JFrame("Muokkaa asiakasta");
-        addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        JFrame editFrame = new JFrame("Muokkaa asiakasta");
+        editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        JLabel addUserLabel = new JLabel("Muokkaa asiakasta");
-        addUserLabel.setHorizontalAlignment(JLabel.CENTER);
-        addUserLabel.setVerticalAlignment(JLabel.TOP);
+        JLabel editLabel = new JLabel("Muokkaa asiakasta");
+        editLabel.setHorizontalAlignment(JLabel.CENTER);
+        editLabel.setVerticalAlignment(JLabel.TOP);
 
         // Add padding. For whatever reason, struts don't work here.
-        addUserLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        editLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        addUserFrame.add(addUserLabel, BorderLayout.NORTH);
+        editFrame.add(editLabel, BorderLayout.NORTH);
 
         // Get screen dimensions and calculate the window size
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -235,12 +230,12 @@ public class CustomerView {
         leftPanel.add(firstNameField);
         leftPanel.add(Box.createVerticalGlue());
 
-        JTextField homeAddressField = new JTextField(20);
-        homeAddressField.setMaximumSize(textBoxDimension);
+        JTextField addressField = new JTextField(20);
+        addressField.setMaximumSize(textBoxDimension);
         String address = customer.getString("address");
-        homeAddressField.setText(address);
+        addressField.setText(address);
         leftPanel.add(new JLabel("Kotiosoite:"));
-        leftPanel.add(homeAddressField);
+        leftPanel.add(addressField);
         leftPanel.add(Box.createVerticalGlue());
 
         JTextField emailField = new JTextField(20);
@@ -251,7 +246,7 @@ public class CustomerView {
         leftPanel.add(emailField);
         leftPanel.add(Box.createVerticalGlue());
 
-        ButtonGroup membershipTypeGroup = new ButtonGroup();
+        ButtonGroup membershipButtons = new ButtonGroup();
         JTextField months = new JTextField(20);
         months.setMaximumSize(textBoxDimension);
         JTextField visits = new JTextField(20);
@@ -287,8 +282,8 @@ public class CustomerView {
         membershipType.addActionListener(membershipListener);
         membershipType2.addActionListener(membershipListener);
 
-        membershipTypeGroup.add(membershipType);
-        membershipTypeGroup.add(membershipType2);
+        membershipButtons.add(membershipType);
+        membershipButtons.add(membershipType2);
 
         leftPanel.add(membershipType);
         leftPanel.add(months);
@@ -361,7 +356,7 @@ public class CustomerView {
         rightPanel.add(Box.createVerticalGlue());
 
         cancelButton.addActionListener(e -> {
-            addUserFrame.dispose();
+            editFrame.dispose();
         });
         ///////// STUFF IN THE RIGHT PANE /////////
 
@@ -369,11 +364,11 @@ public class CustomerView {
         mainPanel.add(leftPanel);
         mainPanel.add(rightPanel);
 
-        addUserFrame.add(mainPanel, BorderLayout.CENTER);
+        editFrame.add(mainPanel, BorderLayout.CENTER);
 
-        addUserFrame.setSize(frameWidth, frameHeight);
-        addUserFrame.setLocationRelativeTo(null);
-        addUserFrame.setVisible(true);
+        editFrame.setSize(frameWidth, frameHeight);
+        editFrame.setLocationRelativeTo(null);
+        editFrame.setVisible(true);
 
         /*
          * This action listener is for the save button.
@@ -388,26 +383,30 @@ public class CustomerView {
                         String membershipType = customer.getString("membership_type");
                         if (membershipType.equals("Kuukausijäsenyys")) {
                             CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"),
-                                    firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(),
+                                    firstNameField.getText(), lastNameField.getText(), addressField.getText(),
                                     phoneNumberField.getText(), emailField.getText(), notesField.getText(),
                                     membershipField.getText(), 0);
                         } else if (customer.getString("membership_type").equals("Kertakäynti")) {
                             membershipType2.setEnabled(false);
                             CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"),
-                                    firstNameField.getText(), lastNameField.getText(), homeAddressField.getText(),
+                                    firstNameField.getText(), lastNameField.getText(), addressField.getText(),
                                     phoneNumberField.getText(), emailField.getText(), notesField.getText(),
                                     membershipField.getText(), Integer.parseInt(visits.getText()));
                         }
 
-                        HidingPopup popup = new HidingPopup(addUserFrame, "Muutos tallennettu", 2000, "checkMark.png");
+                        HidingPopup popup = new HidingPopup(editFrame, "Muutos tallennettu", 2000, "checkMark.png");
                         popup.showPopup();
 
                     } catch (NumberFormatException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+
+                        HidingPopup popup = new HidingPopup(editFrame, "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
+                        popup.showPopup();
+
                     } catch (SQLException e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                        
+                        HidingPopup popup = new HidingPopup(editFrame, "Muutos epäonnistui, tietokantaongelma. Ottakaa yhteyttä tukeen.", 2000);
+                        popup.showPopup();
+
                     }
 
                     // Close the frame

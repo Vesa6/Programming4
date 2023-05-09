@@ -55,7 +55,7 @@ public class Main {
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         //This passes the username and password to the other class.
-        loginButton.addActionListener(new EventHandler(usernameField, passwordField));
+        loginButton.addActionListener(new HomeView(usernameField, passwordField));
 
         JPanel usernamePanel = new JPanel();
         usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.X_AXIS));
@@ -90,5 +90,6 @@ public class Main {
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        
     }
 }

@@ -13,14 +13,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.awt.TextArea;
 
-public class EventHandler implements ActionListener {
+public class HomeView implements ActionListener {
     private JTextField usernameField;
     private JPasswordField passwordField;
 
     // This is to dynamically change sizes of all buttons at toolbar at once
     private static int BTNTBAR_HEIGHT = 50;
 
-    public EventHandler(JTextField usernameField, JPasswordField passwordField) {
+    public HomeView(JTextField usernameField, JPasswordField passwordField) {
         this.usernameField = usernameField;
         this.passwordField = passwordField;
     }
@@ -241,27 +241,33 @@ public class EventHandler implements ActionListener {
                     LocalDate endDate = currentDate.plusMonths(Integer.valueOf(months.getText()));
                     String endDateString = endDate.format(sqlDateFormat);
 
-                    // For now, only monthly customers exist.
                     String memberTypeSelected = "Kuukausijäsenyys";
 
                     CustomerDatabase.getInstance().addCustomerMonthly(firstNameField.getText(), lastNameField.getText(),
                             phoneNumberField.getText(), emailField.getText(), memberTypeSelected, currentDateString,
                             endDateString, homeAddressField.getText(), 0, notesField.getText());
+
                 } else if ((e.getSource() == saveButton) && (membershipType2.isSelected())) {
 
-                    // For now, only monthly customers exist.
                     String memberTypeSelected = "Kertakäynti";
 
+                    try {
                     CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(), lastNameField.getText(),
                             phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
                             homeAddressField.getText(), Integer.valueOf(visits.getText()), notesField.getText());
                 }
+               catch (NumberFormatException nE){
+
+                HidingPopup popup = new HidingPopup(addUserFrame, "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
+                popup.showPopup();
+            }
 
                 //Close the frame
                 Component component = (Component) e.getSource();
                 JFrame frame = (JFrame) SwingUtilities.getRoot(component);
                 frame.dispose();
             }
+        }
         };
 
         saveButton.addActionListener(saveListener);
@@ -269,11 +275,6 @@ public class EventHandler implements ActionListener {
 
     private void createPostLoginGUI(ActionEvent e, String enteredUsername, String enteredPassword) {
 
-        /*
-         * N.B!
-         * LIST ALL THE LISTENERS BETWEEN THESE COMMENTS FOR CLARITY.
-         * ...They get lost easily.
-         */
         ActionListener addUserButtonListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -301,19 +302,15 @@ public class EventHandler implements ActionListener {
                 openEventViewer();
             }
         };
-        /*
-        * 
-        */
 
         if (CustomerDatabase.getInstance().checkCredentials(enteredUsername, enteredPassword)) {
-            // Close the current login frame
+            
             Component component = (Component) e.getSource();
             JFrame frame = (JFrame) SwingUtilities.getRoot(component);
             frame.dispose();
 
-            // Open a new view
-            JFrame newView = new JFrame("New View");
-            newView.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            JFrame home = new JFrame("homeView");
+            home.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             URL urlGymGate = Main.class.getResource("GymGate.png");
             ImageIcon imageIcon = new ImageIcon(urlGymGate);
@@ -350,46 +347,7 @@ public class EventHandler implements ActionListener {
             helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
             helpButton.addActionListener(helpButtonListener); */
 
-            JMenuBar mb = new JMenuBar();
-            JMenu menu = new JMenu("");
-            menu.setIcon(iconFactory("Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            //JMenuItem sendHelp = new JMenuItem("");
-            //sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            //sendHelp.addActionListener(helpButtonListener);
-            JMenu manage = new JMenu("Asiakkaiden hallinta");
-            JMenuItem adder, browser, events;
-            events = new JMenuItem("Tapahtumat");
-            events.addActionListener(viewEventsButtonListener);
-            adder = new JMenuItem("Lisää asiakas");
-            adder.addActionListener(addUserButtonListener);
-            browser = new JMenuItem("Selaa asiakkaita");
-            browser.addActionListener(viewEventsButtonListener);
-            menu.add(manage);
-            menu.add(events);
-            manage.add(adder);manage.add(browser);
-            mb.add(menu);
-            //JSeparator sep = new JSeparator();
-            //sep.setForeground(Color.white);
-            //mb.add(sep);
-            //mb.add(sendHelp);
-
-            JButton sendHelp = new JButton("");
-            sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            sendHelp.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            sendHelp.setMargin(new Insets(2, 2, 2, 2));
-            sendHelp.setBorderPainted(false);
-            //Border border = BorderFactory.createEmptyBorder(2,2,2,2);
-            //sendHelp.setBorder(border);
-            sendHelp.setContentAreaFilled(false);
-            sendHelp.addActionListener(helpButtonListener);
-            JSeparator sep = new JSeparator();
-            sep.setForeground(Color.white);
-            mb.add(sep);
-            mb.add(sendHelp);
-
-            newView.setJMenuBar(mb); 
-
-
+            createMenuBar(addUserButtonListener, helpButtonListener, viewEventsButtonListener, home); 
 
 /*             JPanel toolPanel = new JPanel();
             toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.X_AXIS));
@@ -416,14 +374,60 @@ public class EventHandler implements ActionListener {
             mainPanel.add(viewCustomersButton);
             mainPanel.add(Box.createVerticalStrut(200)); // Add a 200-pixel vertical space at the bottom
 
-            newView.add(mainPanel, BorderLayout.CENTER);
-            //newView.add(toolPanel, BorderLayout.NORTH);
-            newView.setExtendedState(JFrame.MAXIMIZED_BOTH);
-            newView.setLocationRelativeTo(null);
-            newView.setVisible(true);
+            home.add(mainPanel, BorderLayout.CENTER);
+
+            home.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            home.setLocationRelativeTo(null);
+            home.setVisible(true);
         }
     }
 
+    private void createMenuBar(ActionListener addUserButtonListener, ActionListener helpButtonListener,
+            ActionListener viewEventsButtonListener, JFrame home) {
+
+        JMenuBar mb = new JMenuBar();
+        JMenu menu = new JMenu("");
+        menu.setIcon(iconFactory("Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        //JMenuItem sendHelp = new JMenuItem("");
+        //sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        //sendHelp.addActionListener(helpButtonListener);
+        JMenu manage = new JMenu("Asiakkaiden hallinta");
+        JMenuItem adder, browser, events;
+        events = new JMenuItem("Tapahtumat");
+        events.addActionListener(viewEventsButtonListener);
+        adder = new JMenuItem("Lisää asiakas");
+        adder.addActionListener(addUserButtonListener);
+        browser = new JMenuItem("Selaa asiakkaita");
+        browser.addActionListener(viewEventsButtonListener);
+        menu.add(manage);
+        menu.add(events);
+        manage.add(adder);manage.add(browser);
+        mb.add(menu);
+        //JSeparator sep = new JSeparator();
+        //sep.setForeground(Color.white);
+        //mb.add(sep);
+        //mb.add(sendHelp);
+
+        JButton sendHelp = new JButton("");
+        sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        sendHelp.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        sendHelp.setMargin(new Insets(2, 2, 2, 2));
+        sendHelp.setBorderPainted(false);
+        //Border border = BorderFactory.createEmptyBorder(2,2,2,2);
+        //sendHelp.setBorder(border);
+        sendHelp.setContentAreaFilled(false);
+        sendHelp.addActionListener(helpButtonListener);
+        JSeparator sep = new JSeparator();
+        sep.setForeground(Color.white);
+        mb.add(sep);
+        mb.add(sendHelp);
+
+        home.setJMenuBar(mb);
+    }
+
+    /*
+     * This is used as a helper when the user logs in.
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
         String enteredUsername = usernameField.getText();
