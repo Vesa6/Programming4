@@ -25,6 +25,13 @@ public class Main {
 
         CustomerDatabase db = new CustomerDatabase();
 
+        createLoginGUI();
+        
+    }
+
+    
+
+    private static void createLoginGUI() {
         Dimension textBoxDimension = new Dimension(200, 20);
 
         URL url = Main.class.getResource("GymGate.png");
@@ -86,10 +93,10 @@ public class Main {
         frame.setLayout(new BorderLayout());
         frame.add(mainPanel, BorderLayout.CENTER);
 
+        //make fullscreen
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        
     }
 }

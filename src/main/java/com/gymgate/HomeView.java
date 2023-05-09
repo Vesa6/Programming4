@@ -423,6 +423,21 @@ public class HomeView implements ActionListener {
         mb.add(sendHelp);
 
         home.setJMenuBar(mb);
+
+        JMenu userMenu = new JMenu("Käyttäjä");
+
+        userMenu.setIcon(iconFactory("Profile_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        JMenuItem logout = new JMenuItem("Kirjaudu ulos", iconFactory("Sign_out_Icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        logout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        userMenu.add(logout);
+        mb.add(userMenu);
+
+
     }
 
     /*
