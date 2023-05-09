@@ -29,8 +29,6 @@ public class Main {
         
     }
 
-    
-
     private static void createLoginGUI() {
         Dimension textBoxDimension = new Dimension(200, 20);
 

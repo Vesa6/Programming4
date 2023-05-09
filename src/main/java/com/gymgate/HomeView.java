@@ -200,12 +200,12 @@ public class HomeView implements ActionListener {
         rightPanel.add(phoneNumberField);
         rightPanel.add(Box.createVerticalGlue());
 
-        JTextArea notesField = new JTextArea(20, 20);
-        notesField.setLineWrap(true);
-        notesField.setMaximumSize(new Dimension(400, 100));
-        notesField.setLineWrap(true);
+        JTextArea additionalInfo = new JTextArea(20, 20);
+        additionalInfo.setLineWrap(true);
+        additionalInfo.setMaximumSize(new Dimension(400, 100));
+        additionalInfo.setLineWrap(true);
         rightPanel.add(new JLabel("Lisätiedot:"));
-        rightPanel.add(notesField);
+        rightPanel.add(additionalInfo);
         rightPanel.add(Box.createVerticalGlue());
 
         JButton cancelButton = new JButton("Peruuta");
@@ -245,7 +245,7 @@ public class HomeView implements ActionListener {
 
                     CustomerDatabase.getInstance().addCustomerMonthly(firstNameField.getText(), lastNameField.getText(),
                             phoneNumberField.getText(), emailField.getText(), memberTypeSelected, currentDateString,
-                            endDateString, homeAddressField.getText(), 0, notesField.getText());
+                            endDateString, homeAddressField.getText(), 0, additionalInfo.getText());
 
                 } else if ((e.getSource() == saveButton) && (membershipType2.isSelected())) {
 
@@ -254,7 +254,7 @@ public class HomeView implements ActionListener {
                     try {
                     CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(), lastNameField.getText(),
                             phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
-                            homeAddressField.getText(), Integer.valueOf(visits.getText()), notesField.getText());
+                            homeAddressField.getText(), Integer.valueOf(visits.getText()), additionalInfo.getText());
                 }
                catch (NumberFormatException nE){
 
