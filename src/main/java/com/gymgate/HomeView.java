@@ -313,7 +313,7 @@ public class HomeView implements ActionListener {
             JFrame frame = (JFrame) SwingUtilities.getRoot(component);
             frame.dispose();
 
-            JFrame home = new JFrame("homeView");
+            JFrame home = new JFrame("GymGate client");
             home.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             URL urlGymGate = Main.class.getResource("GymGate.png");
@@ -395,17 +395,31 @@ public class HomeView implements ActionListener {
         //JMenuItem sendHelp = new JMenuItem("");
         //sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
         //sendHelp.addActionListener(helpButtonListener);
+        ImageIcon manageCustomersIcon = iconFactory("Edit_users_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT);
+
         JMenu manage = new JMenu("Asiakkaiden hallinta");
+        manage.setIcon(manageCustomersIcon);
+
+        ImageIcon viewCustomersIcon = iconFactory("List_customers_icon.png", BTNTBAR_HEIGHT-15, BTNTBAR_HEIGHT-15);
+        ImageIcon addCustomersIcon = iconFactory("List_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT);
+        ImageIcon viewEventsIcon = iconFactory("Add_customer_icon.png", BTNTBAR_HEIGHT-15, BTNTBAR_HEIGHT-15);
+        
+
         JMenuItem adder, browser, events;
+        
         events = new JMenuItem("Tapahtumat");
         events.addActionListener(viewEventsButtonListener);
+        events.setIcon(addCustomersIcon);
         adder = new JMenuItem("Lisää asiakas");
         adder.addActionListener(addUserButtonListener);
+        adder.setIcon(viewEventsIcon);
         browser = new JMenuItem("Selaa asiakkaita");
         browser.addActionListener(viewEventsButtonListener);
+        browser.setIcon(viewCustomersIcon);
         menu.add(manage);
         menu.add(events);
-        manage.add(adder);manage.add(browser);
+        manage.add(adder);
+        manage.add(browser);
         mb.add(menu);
         //JSeparator sep = new JSeparator();
         //sep.setForeground(Color.white);
@@ -438,6 +452,16 @@ public class HomeView implements ActionListener {
                 System.exit(0);
             }
         });
+
+        JMenuItem changePassword = new JMenuItem("Vaihda salasana", iconFactory("Settings_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        changePassword.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new ChangePasswordGUI();
+            }
+        });
+
+        userMenu.add(changePassword);
         userMenu.add(logout);
         mb.add(userMenu);
 
