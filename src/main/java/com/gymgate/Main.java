@@ -32,10 +32,10 @@ public class Main {
     private static void createLoginGUI() {
         Dimension textBoxDimension = new Dimension(200, 20);
 
-        URL url = Main.class.getResource("GymGate.png");
+        URL url = Main.class.getResource("Icons/GymGate.png");
         ImageIcon imageIcon = new ImageIcon(url);
         Image image = imageIcon.getImage();
-        image = image.getScaledInstance(200, 150, java.awt.Image.SCALE_SMOOTH);
+        image = image.getScaledInstance(400, 228, java.awt.Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(image);
 
         JLabel label = new JLabel();

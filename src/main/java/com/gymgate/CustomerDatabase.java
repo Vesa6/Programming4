@@ -52,7 +52,7 @@ public class CustomerDatabase {
         if (connection != null) {
 
             String createDB = "CREATE TABLE Customers(customer_id INTEGER PRIMARY KEY AUTOINCREMENT, first_name VARCHAR(40) NOT NULL, last_name VARCHAR(40) NOT NULL, phone_number VARCHAR(20) NOT NULL, email VARCHAR(50), membership_type VARCHAR(30), membership_start VARCHAR(100), membership_end VARCHAR(100), address VARCHAR(50), visits INTEGER, additional_information VARCHAR(300))";
-            String createUserDB = "CREATE TABLE Users(user_id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(40) NOT NULL, password VARCHAR(40) NOT NULL)";
+            String createUserDB = "CREATE TABLE Users(user_id INTEGER PRIMARY KEY AUTOINCREMENT, username VARCHAR(40) NOT NULL UNIQUE, password VARCHAR(40) NOT NULL)";
             String createEventDB = "CREATE TABLE Events(event_id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT NOT NULL, customer_id INTEGER)";
 
             Statement createStatement = connection.createStatement();
@@ -138,6 +138,7 @@ public class CustomerDatabase {
         }
     }
 
+
     public void registerUser(String username, String password) {
         /*
          * Registers the username and password (crypted) given as parameters to database
@@ -145,11 +146,12 @@ public class CustomerDatabase {
          * 
          */
         try {
-            byte bytes[] = new byte[13];
+/*             byte bytes[] = new byte[13];
             secureRandom.nextBytes(bytes);
             String saltBytes = new String(Base64.getEncoder().encode(bytes));
             String salt = "$6$" + saltBytes;
-            String hashedPassword = Crypt.crypt(password, salt);
+            String hashedPassword = Crypt.crypt(password, salt); */
+            String hashedPassword = cryptPass(password);
             String userSet = "INSERT INTO Users(username, password) VALUES (?, ?)";
             PreparedStatement ps = connection.prepareStatement(userSet);
             ps.setString(1, username);
@@ -160,6 +162,55 @@ public class CustomerDatabase {
             System.out.println(e.getMessage());
 
         }
+    }
+
+    public String cryptPass(String password){
+        //returns crypted password from string given as parameter
+        byte bytes[] = new byte[13];
+        secureRandom.nextBytes(bytes);
+        String saltBytes = new String(Base64.getEncoder().encode(bytes));
+        String salt = "$6$" + saltBytes;
+        String hashedPassword = Crypt.crypt(password, salt);
+
+        return hashedPassword;
+    }
+
+    public String getCryptedPassword(String username) {
+        try{
+            String getPass = "SELECT (password) FROM Users WHERE username = ?";
+            PreparedStatement ps = connection.prepareStatement(getPass);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            String hashedPass = "";
+            if (rs.next()) {
+                hashedPass = rs.getString("password");
+                ps.close();
+                return hashedPass;
+            }
+            
+        }catch(SQLException e){
+            System.out.println("Failed to get hashed password from database");
+        }
+        return null;
+
+    }
+
+    public void changePassword(String username, String password){
+        String hashedPass = cryptPass(password);
+        String updateQuery = "UPDATE Users SET password = ? WHERE username = ?";
+
+        try {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+            preparedStatement.setString(1, hashedPass);
+            preparedStatement.setString(2, username);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+
+        } catch (SQLException e) {
+            System.out.println("Failed changing password: " + e.getMessage());
+        }
+
     }
 
     public boolean userExists(String username) throws SQLException {

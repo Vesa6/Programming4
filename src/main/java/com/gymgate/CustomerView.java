@@ -160,7 +160,7 @@ public class CustomerView {
                             if (CustomerDatabase.getInstance().deleteCustomer(customerId)) {
 
                                 HidingPopup popup = new HidingPopup(SwingUtilities.getRootPane(table),
-                                        "Asiakas poistettu", 2000, "checkMark.png");
+                                        "Asiakas poistettu", 2000, "Icons/checkMark.png");
                                 popup.showPopup();
                                 model.removeRow(row);
                                 confirmPop.dispose();
@@ -394,7 +394,7 @@ public class CustomerView {
                                     membershipField.getText(), Integer.parseInt(visits.getText()));
                         }
 
-                        HidingPopup popup = new HidingPopup(editFrame, "Muutos tallennettu", 2000, "checkMark.png");
+                        HidingPopup popup = new HidingPopup(editFrame, "Muutos tallennettu", 2000, "Icons/checkMark.png");
                         popup.showPopup();
 
                     } catch (NumberFormatException e1) {
