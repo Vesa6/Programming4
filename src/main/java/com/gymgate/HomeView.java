@@ -304,6 +304,10 @@ public class HomeView implements ActionListener {
         };
 
         if (CustomerDatabase.getInstance().checkCredentials(enteredUsername, enteredPassword)) {
+
+            ImageIcon lisääAsiakasIcon = iconFactory("Add_customer_icon.png", 24, 24);
+            ImageIcon selaaTapahtumiaIcon = iconFactory("List_icon.png", 24, 24);
+            ImageIcon selaaAsikkaitaIcon = iconFactory("List_customers_icon.png", 24, 24);
             
             Component component = (Component) e.getSource();
             JFrame frame = (JFrame) SwingUtilities.getRoot(component);
@@ -328,15 +332,15 @@ public class HomeView implements ActionListener {
             Font arialFont = new Font("Arial", Font.PLAIN, 24);
             label.setFont(arialFont);
 
-            JButton addMemberButton = new JButton("Lisää asiakas");
+            JButton addMemberButton = new JButton("Lisää asiakas", lisääAsiakasIcon);
             addMemberButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             addMemberButton.addActionListener(addUserButtonListener);
 
-            JButton viewLogsButton = new JButton("Selaa tapahtumia");
+            JButton viewLogsButton = new JButton("Selaa tapahtumia", selaaTapahtumiaIcon);
             viewLogsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             viewLogsButton.addActionListener(viewEventsButtonListener);
 
-            JButton viewCustomersButton = new JButton("Selaa asiakkaita");
+            JButton viewCustomersButton = new JButton("Selaa asiakkaita", selaaAsikkaitaIcon);
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             viewCustomersButton.addActionListener(viewCustomersButtonListener);
 
