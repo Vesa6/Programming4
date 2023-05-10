@@ -179,6 +179,7 @@ public class HomeView implements ActionListener {
         leftPanel.add(membershipType2);
         leftPanel.add(visits);
         leftPanel.add(Box.createVerticalGlue());
+        leftPanel.add(Box.createVerticalStrut(260));
 
         JButton saveButton = new JButton("Tallenna");
         leftPanel.add(saveButton);
@@ -211,9 +212,26 @@ public class HomeView implements ActionListener {
         rightPanel.add(additionalInfo);
         rightPanel.add(Box.createVerticalGlue());
 
+        JButton rfidButton = new JButton("Lisää RFID");
+
+        JPanel rfidPanel = new JPanel();
+        rfidPanel.setLayout(new BoxLayout(rfidPanel, BoxLayout.X_AXIS));
+        rfidPanel.add(Box.createHorizontalStrut(78));
+
+        
+
+        rfidPanel.add(rfidButton);
+
+        
+        rightPanel.add(rfidPanel);
+
+        rightPanel.add(Box.createVerticalStrut(30));
         JButton cancelButton = new JButton("Peruuta");
         rightPanel.add(cancelButton);
         rightPanel.add(Box.createVerticalGlue());
+
+        
+
 
         cancelButton.addActionListener(e -> {
             addUserFrame.dispose();
@@ -223,6 +241,13 @@ public class HomeView implements ActionListener {
         JPanel mainPanel = new JPanel(new GridLayout(1, 2));
         mainPanel.add(leftPanel);
         mainPanel.add(rightPanel);
+
+        rfidButton.addActionListener(e -> {
+    
+            HidingPopup popup = new HidingPopup(mainPanel, "RFID lisätty", 2000, "Icons/checkMark.png");
+            popup.showPopup();
+
+            });
 
         addUserFrame.add(mainPanel, BorderLayout.CENTER);
 

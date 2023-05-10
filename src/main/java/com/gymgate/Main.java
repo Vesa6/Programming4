@@ -32,7 +32,8 @@ public class Main {
     }
 
     private static void createLoginGUI() {
-        Dimension textBoxDimension = new Dimension(200, 20);
+        
+        Dimension txtBoxDimension = new Dimension(200, 20);
 
         URL url = Main.class.getResource("Icons/GymGate.png");
         ImageIcon imageIcon = new ImageIcon(url);
@@ -52,17 +53,17 @@ public class Main {
 
         JLabel usernameLabel = new JLabel("Käyttäjänimi:");
         JTextField usernameField = new JTextField(20);
-        usernameField.setMaximumSize(textBoxDimension);
+        usernameField.setMaximumSize(txtBoxDimension);
 
-        JLabel passwordLabel = new JLabel("Salasana:");
-        JPasswordField passwordField = new JPasswordField(20);
-        passwordField.setMaximumSize(textBoxDimension);
+        JLabel passLabel = new JLabel("Salasana:");
+        JPasswordField passField = new JPasswordField(20);
+        passField.setMaximumSize(txtBoxDimension);
 
         JButton loginButton = new JButton("Kirjaudu");
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // This passes the username and password to the other class.
-        loginButton.addActionListener(new HomeView(usernameField, passwordField));
+        loginButton.addActionListener(new HomeView(usernameField, passField));
 
         JPanel usernamePanel = new JPanel();
         usernamePanel.setLayout(new BoxLayout(usernamePanel, BoxLayout.X_AXIS));
@@ -70,11 +71,11 @@ public class Main {
         usernamePanel.add(Box.createHorizontalStrut(10));
         usernamePanel.add(usernameField);
 
-        JPanel passwordPanel = new JPanel();
-        passwordPanel.setLayout(new BoxLayout(passwordPanel, BoxLayout.X_AXIS));
-        passwordPanel.add(passwordLabel);
-        passwordPanel.add(Box.createHorizontalStrut(10));
-        passwordPanel.add(passwordField);
+        JPanel passPanel = new JPanel();
+        passPanel.setLayout(new BoxLayout(passPanel, BoxLayout.X_AXIS));
+        passPanel.add(passLabel);
+        passPanel.add(Box.createHorizontalStrut(10));
+        passPanel.add(passField);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -83,8 +84,9 @@ public class Main {
         mainPanel.add(Box.createVerticalGlue());
         mainPanel.add(usernamePanel);
         mainPanel.add(Box.createVerticalGlue());
-        mainPanel.add(passwordPanel);
+        mainPanel.add(passPanel);
         mainPanel.add(Box.createVerticalGlue());
+
         mainPanel.add(loginButton);
         mainPanel.add(Box.createVerticalStrut(200)); // Add a 200-pixel vertical space at the bottom
 
