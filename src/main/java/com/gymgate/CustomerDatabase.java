@@ -1,6 +1,8 @@
 package com.gymgate;
 
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,6 +35,7 @@ public class CustomerDatabase {
             open("CustomerDB.db");
         } catch (SQLException e) {
             logger.severe("Error opening database: " + e.getMessage());
+            DbgLogger.generateCrashLog();
         }
     }
 
@@ -75,11 +78,12 @@ public class CustomerDatabase {
 
             // Below class is to create a test database with 1000 random customers to test
             // the functionalities of it
-            new DatabaseFiller(1000);
+            new DatabaseFiller(30);
 
             return true;
         }
         logger.severe("Database creation failed");
+        DbgLogger.generateCrashLog();
         return false;
     }
 
@@ -238,6 +242,27 @@ public class CustomerDatabase {
             return true;
         }
         return false;
+    }
+
+    public void addRFIDEvent(int id) {
+
+        String eventSet = "INSERT INTO Events(date, customer_id) VALUES (?,?)";
+        try {
+
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm:ss");
+            LocalDateTime dt = LocalDateTime.now();
+            String date = dt.format(format);
+
+            PreparedStatement ps = connection.prepareStatement(eventSet);
+            ps.setString(1, date);
+            ps.setInt(2, id);
+
+            ps.executeUpdate();
+            ps.close();
+        } catch (SQLException e) {
+            logger.warning("Error storing an event: " + e.getMessage());
+        }
+
     }
 
     public boolean checkCredentials(String username, String password) {

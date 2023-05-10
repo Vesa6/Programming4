@@ -11,7 +11,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.awt.TextArea;
 import java.util.logging.Logger;
 
 public class HomeView implements ActionListener {
@@ -24,9 +23,78 @@ public class HomeView implements ActionListener {
 
     public HomeView(JTextField usernameField, JPasswordField passwordField) {
         logger.info("Created an instance of HomeView");
+
+        DbgLogger.setDisplayDummyRFID(true);
+
         this.usernameField = usernameField;
         this.passwordField = passwordField;
+
+        if (DbgLogger.isDisplayDummyRFID()) {
+            displayDummyRFID();
+        }
     }
+
+    private void displayDummyRFID() {
+        JFrame dummyRFIDFrame = new JFrame("Dummy RFID");
+        dummyRFIDFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        dummyRFIDFrame.setSize(300, 300);
+        dummyRFIDFrame.setLocation(50,300);
+        dummyRFIDFrame.setAlwaysOnTop(true);
+    
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+    
+        mainPanel.add(Box.createVerticalStrut(20));
+        JLabel CustomerIdLabel = new JLabel("Asiakas ID");
+        CustomerIdLabel.setFont(new Font("Arial", Font.PLAIN, 24));
+        CustomerIdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(CustomerIdLabel);
+    
+        JTextField customerField = new JTextField(10); 
+        customerField.setMaximumSize(customerField.getPreferredSize()); 
+        customerField.setAlignmentX(Component.CENTER_ALIGNMENT);
+        mainPanel.add(customerField);
+        mainPanel.add(Box.createVerticalStrut(50));
+        
+        mainPanel.add(Box.createVerticalStrut(20)); 
+    
+        JPanel btnPanel = new JPanel();
+        
+        JButton svButton = new JButton("Tallenna");
+        svButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        btnPanel.add(svButton);
+    
+        svButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CustomerDatabase.getInstance().addRFIDEvent(Integer.valueOf(customerField.getText()));
+                customerField.setText("");
+
+                //EventViewer.frame.dispose();
+                //new EventViewer();
+                                          
+            }
+        });
+    
+        btnPanel.add(Box.createHorizontalGlue()); // Creates horizontal space between elements
+    
+        JButton resetButton = new JButton("Nollaa");
+        resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resetButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                customerField.setText("");
+            }
+        });
+
+        btnPanel.add(resetButton);
+    
+        mainPanel.add(btnPanel);
+        dummyRFIDFrame.add(mainPanel);
+        dummyRFIDFrame.setVisible(true);
+    }
+    
 
     private void openCustomerView() {
         new CustomerView();

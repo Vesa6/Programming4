@@ -5,6 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.*;
 import org.json.JSONObject;
 
@@ -113,7 +118,26 @@ public class DbgLogger {
         }
     }
 
-    public boolean isDisplayDummyRFID() {
+    public static void generateCrashLog() {
+        Logger logger = Logger.getLogger(DbgLogger.class.getName());
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
+        LocalDateTime dt = LocalDateTime.now();
+        String date = dt.format(format);
+        String filename = "crash_log_" + date + ".txt";
+        Path source = Paths.get("dbg_log.txt");
+        Path copy = Paths.get(filename);
+        try{
+            new File(copy.toString());
+            Files.copy(source,copy);
+            logger.info("Crashed? Please contact customer support.");
+        }catch(IOException ioe){
+            System.out.println(ioe);
+            logger.info("Failed to copy crash log: " + ioe);
+        }
+
+    }
+
+    public static boolean isDisplayDummyRFID() {
         return displayDummyRFID;
     }
 

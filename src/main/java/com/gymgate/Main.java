@@ -24,6 +24,7 @@ public class Main {
     private static final Logger logger = DbgLogger.getLogger();
 
     public static void main(String[] args) throws SQLException {
+
         logger.info("Created an instance of Main");
         CustomerDatabase db = new CustomerDatabase();
 

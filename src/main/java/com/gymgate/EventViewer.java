@@ -33,14 +33,15 @@ public class EventViewer {
     private JTextField startDateField;
     private JTextField endDateField;
     private JTable table;
-
+    public static JFrame frame = null;
+    
     public EventViewer() {
         createEventViewerGUI();
         logger.info("Created an instance of EventViewer");
     }
 
     private void createEventViewerGUI() {
-        JFrame frame = new JFrame("Tapahtumat");
+        frame = new JFrame("Tapahtumat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int frameWidth = (int) (screenSize.width * 0.6);
@@ -164,7 +165,7 @@ public class EventViewer {
 
     }
 
-    private static void defaultEventTableLabels(JTable table) {
+    public static void defaultEventTableLabels(JTable table) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
