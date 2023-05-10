@@ -2,6 +2,7 @@ package com.gymgate;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -20,13 +21,14 @@ import java.awt.Font;
 import java.awt.Image;
 
 public class Main {
+    private static final Logger logger = DbgLogger.getLogger();
 
     public static void main(String[] args) throws SQLException {
-
+        logger.info("Created an instance of Main");
         CustomerDatabase db = new CustomerDatabase();
 
         createLoginGUI();
-        
+
     }
 
     private static void createLoginGUI() {
@@ -59,7 +61,7 @@ public class Main {
         JButton loginButton = new JButton("Kirjaudu");
         loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        //This passes the username and password to the other class.
+        // This passes the username and password to the other class.
         loginButton.addActionListener(new HomeView(usernameField, passwordField));
 
         JPanel usernamePanel = new JPanel();
@@ -91,7 +93,7 @@ public class Main {
         frame.setLayout(new BorderLayout());
         frame.add(mainPanel, BorderLayout.CENTER);
 
-        //make fullscreen
+        // make fullscreen
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         frame.setLocationRelativeTo(null);

@@ -10,8 +10,10 @@ import java.util.Base64;
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 import org.apache.commons.codec.digest.Crypt;
+import java.util.logging.Logger;
 
 public class CustomerDatabase {
+    private static final Logger logger = DbgLogger.getLogger();
 
     private Connection connection = null;
     private static CustomerDatabase dbinstance = null;
@@ -20,6 +22,7 @@ public class CustomerDatabase {
     public static synchronized CustomerDatabase getInstance() {
         if (dbinstance == null) {
             dbinstance = new CustomerDatabase();
+            logger.info("Created a new instance of CustomerDatabase");
         }
         return dbinstance;
     }
@@ -29,7 +32,7 @@ public class CustomerDatabase {
         try {
             open("CustomerDB.db");
         } catch (SQLException e) {
-            System.out.println("Error opening database: " + e.getMessage());
+            logger.severe("Error opening database: " + e.getMessage());
         }
     }
 
@@ -72,11 +75,11 @@ public class CustomerDatabase {
 
             // Below class is to create a test database with 1000 random customers to test
             // the functionalities of it
-            new DatabaseFiller(100);
+            new DatabaseFiller(1000);
 
             return true;
         }
-        System.out.println("Database creation failed.");
+        logger.severe("Database creation failed");
         return false;
     }
 
@@ -105,8 +108,9 @@ public class CustomerDatabase {
 
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            logger.info("Added customer: " + firstName + " " + lastName);
         } catch (SQLException e) {
-            System.out.println("Error adding customer: " + e.getMessage());
+            logger.warning("Error adding customer: " + e.getMessage());
         }
     }
 
@@ -133,11 +137,11 @@ public class CustomerDatabase {
 
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            logger.info("Added customer: " + firstName + " " + lastName);
         } catch (SQLException e) {
-            System.out.println("Error adding customer: " + e.getMessage());
+            logger.warning("Error adding customer: " + e.getMessage());
         }
     }
-
 
     public void registerUser(String username, String password) {
         /*
@@ -146,11 +150,13 @@ public class CustomerDatabase {
          * 
          */
         try {
-/*             byte bytes[] = new byte[13];
-            secureRandom.nextBytes(bytes);
-            String saltBytes = new String(Base64.getEncoder().encode(bytes));
-            String salt = "$6$" + saltBytes;
-            String hashedPassword = Crypt.crypt(password, salt); */
+            /*
+             * byte bytes[] = new byte[13];
+             * secureRandom.nextBytes(bytes);
+             * String saltBytes = new String(Base64.getEncoder().encode(bytes));
+             * String salt = "$6$" + saltBytes;
+             * String hashedPassword = Crypt.crypt(password, salt);
+             */
             String hashedPassword = cryptPass(password);
             String userSet = "INSERT INTO Users(username, password) VALUES (?, ?)";
             PreparedStatement ps = connection.prepareStatement(userSet);
@@ -159,13 +165,13 @@ public class CustomerDatabase {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.warning("Error registering user: " + e.getMessage());
 
         }
     }
 
-    public String cryptPass(String password){
-        //returns crypted password from string given as parameter
+    public String cryptPass(String password) {
+        // returns crypted password from string given as parameter
         byte bytes[] = new byte[13];
         secureRandom.nextBytes(bytes);
         String saltBytes = new String(Base64.getEncoder().encode(bytes));
@@ -176,7 +182,7 @@ public class CustomerDatabase {
     }
 
     public String getCryptedPassword(String username) {
-        try{
+        try {
             String getPass = "SELECT (password) FROM Users WHERE username = ?";
             PreparedStatement ps = connection.prepareStatement(getPass);
             ps.setString(1, username);
@@ -187,15 +193,15 @@ public class CustomerDatabase {
                 ps.close();
                 return hashedPass;
             }
-            
-        }catch(SQLException e){
-            System.out.println("Failed to get hashed password from database");
+
+        } catch (SQLException e) {
+            logger.warning("Failed to get hashed password from database");
         }
         return null;
 
     }
 
-    public void changePassword(String username, String password){
+    public void changePassword(String username, String password) {
         String hashedPass = cryptPass(password);
         String updateQuery = "UPDATE Users SET password = ? WHERE username = ?";
 
@@ -208,7 +214,7 @@ public class CustomerDatabase {
             preparedStatement.close();
 
         } catch (SQLException e) {
-            System.out.println("Failed changing password: " + e.getMessage());
+            logger.warning("Failed changing password: " + e.getMessage());
         }
 
     }
@@ -253,6 +259,7 @@ public class CustomerDatabase {
             }
             if (usernameCompare == null) {
                 System.out.println("Nonexisting user");
+                logger.info("Attempted to login as user '" + username + "' (this username does not exist)");
                 return false;
 
             }
@@ -261,7 +268,7 @@ public class CustomerDatabase {
                 return true;
             }
         } catch (SQLException e) {
-            System.out.println("Failed to get user info from database");
+            logger.warning("Failed to get user info from database");
 
         }
         return false;
@@ -276,7 +283,7 @@ public class CustomerDatabase {
             ResultSet results = statement.executeQuery("SELECT * FROM Customers");
             return results;
         } catch (SQLException e) {
-            System.out.println("Error getting customers: " + e.getMessage());
+            logger.warning("Error getting customers from DB: " + e.getMessage());
             return null;
         }
     }
@@ -290,7 +297,7 @@ public class CustomerDatabase {
             ResultSet results = preparedStatement.executeQuery();
             return results;
         } catch (SQLException e) {
-            System.out.println("Error getting customer: " + e.getMessage());
+            logger.warning("Error getting customer with id " + id + ": " + e.getMessage());
             return null;
         }
     }
@@ -314,9 +321,9 @@ public class CustomerDatabase {
             preparedStatement.setInt(9, customer_id);
             preparedStatement.executeUpdate();
             preparedStatement.close();
-
+            logger.info("Updated info of customer: " + first_name + " " + last_name);
         } catch (SQLException e) {
-            System.out.println("Error updating customer: " + e.getMessage());
+            logger.warning("Error updating customer: " + e.getMessage());
         }
 
     }
@@ -330,7 +337,8 @@ public class CustomerDatabase {
             return results;
 
         } catch (SQLException e) {
-            System.out.println("Error getting events: " + e.getMessage());
+            logger.warning("Error getting events: " + e.getMessage());
+
             return null;
         }
     }
@@ -349,7 +357,7 @@ public class CustomerDatabase {
             ps.executeUpdate();
             ps.close();
         } catch (SQLException e) {
-            System.out.println("Error storing an event: " + e.getMessage());
+            logger.warning("Error storing an event: " + e.getMessage());
         }
 
     }
@@ -363,7 +371,7 @@ public class CustomerDatabase {
             ResultSet results = ps.executeQuery();
             return results;
         } catch (SQLException e) {
-            System.out.println("Error getting events between given dates: " + e.getMessage());
+            logger.warning("Error getting events between given dates: " + e.getMessage());
             return null;
         }
 
@@ -378,9 +386,10 @@ public class CustomerDatabase {
             preparedStatement.setInt(1, customerId);
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            logger.info("Deleted customer: " + customerId);
             return true;
         } catch (SQLException e) {
-            System.out.println("Error deleting customer: " + e.getMessage());
+            logger.warning("Error deleting customer: " + e.getMessage());
             return false;
         }
     }
@@ -394,7 +403,7 @@ public class CustomerDatabase {
             ResultSet results = ps.executeQuery();
             return results;
         } catch (SQLException e) {
-            System.out.println("Error getting events between given dates: " + e.getMessage());
+            logger.warning("Error getting events between given dates: " + e.getMessage());
             return null;
         }
     }

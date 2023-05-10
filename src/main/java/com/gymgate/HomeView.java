@@ -12,15 +12,18 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.awt.TextArea;
+import java.util.logging.Logger;
 
 public class HomeView implements ActionListener {
     private JTextField usernameField;
     private JPasswordField passwordField;
+    private static final Logger logger = DbgLogger.getLogger();
 
     // This is to dynamically change sizes of all buttons at toolbar at once
     private static int BTNTBAR_HEIGHT = 50;
 
     public HomeView(JTextField usernameField, JPasswordField passwordField) {
+        logger.info("Created an instance of HomeView");
         this.usernameField = usernameField;
         this.passwordField = passwordField;
     }
@@ -29,7 +32,7 @@ public class HomeView implements ActionListener {
         new CustomerView();
     }
 
-    private void openEventViewer(){
+    private void openEventViewer() {
         new EventViewer();
     }
 
@@ -252,22 +255,24 @@ public class HomeView implements ActionListener {
                     String memberTypeSelected = "Kertakäynti";
 
                     try {
-                    CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(), lastNameField.getText(),
-                            phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
-                            homeAddressField.getText(), Integer.valueOf(visits.getText()), additionalInfo.getText());
+                        CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(),
+                                lastNameField.getText(),
+                                phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
+                                homeAddressField.getText(), Integer.valueOf(visits.getText()),
+                                additionalInfo.getText());
+                    } catch (NumberFormatException nE) {
+
+                        HidingPopup popup = new HidingPopup(addUserFrame,
+                                "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
+                        popup.showPopup();
+                    }
+
+                    // Close the frame
+                    Component component = (Component) e.getSource();
+                    JFrame frame = (JFrame) SwingUtilities.getRoot(component);
+                    frame.dispose();
                 }
-               catch (NumberFormatException nE){
-
-                HidingPopup popup = new HidingPopup(addUserFrame, "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
-                popup.showPopup();
             }
-
-                //Close the frame
-                Component component = (Component) e.getSource();
-                JFrame frame = (JFrame) SwingUtilities.getRoot(component);
-                frame.dispose();
-            }
-        }
         };
 
         saveButton.addActionListener(saveListener);
@@ -308,7 +313,7 @@ public class HomeView implements ActionListener {
             ImageIcon lisääAsiakasIcon = iconFactory("Icons/Add_customer_icon.png", 24, 24);
             ImageIcon selaaTapahtumiaIcon = iconFactory("Icons/List_icon.png", 24, 24);
             ImageIcon selaaAsikkaitaIcon = iconFactory("Icons/List_customers_icon.png", 24, 24);
-            
+
             Component component = (Component) e.getSource();
             JFrame frame = (JFrame) SwingUtilities.getRoot(component);
             frame.dispose();
@@ -344,27 +349,31 @@ public class HomeView implements ActionListener {
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             viewCustomersButton.addActionListener(viewCustomersButtonListener);
 
+            /*
+             * JButton helpButton = new JButton(iconFactory("Help_icon.png", BTNTBAR_HEIGHT,
+             * BTNTBAR_HEIGHT));
+             * helpButton.setBorder(BorderFactory.createEmptyBorder());
+             * helpButton.setContentAreaFilled(false);
+             * helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+             * helpButton.addActionListener(helpButtonListener);
+             */
 
-/*             JButton helpButton = new JButton(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            helpButton.setBorder(BorderFactory.createEmptyBorder());
-            helpButton.setContentAreaFilled(false);
-            helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-            helpButton.addActionListener(helpButtonListener); */
+            createMenuBar(addUserButtonListener, helpButtonListener, viewEventsButtonListener, home);
 
-            createMenuBar(addUserButtonListener, helpButtonListener, viewEventsButtonListener, home); 
-
-/*             JPanel toolPanel = new JPanel();
-            toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.X_AXIS));
-            Box tpBox = Box.createHorizontalBox();
-            tpBox.add(Box.createHorizontalGlue());
-            //tpBox.add(menuButton);
-            
-            tpBox.add(Box.createRigidArea(new Dimension(1550, 0)));
-            tpBox.add(Box.createHorizontalGlue());
-            tpBox.add(helpButton);
-            tpBox.add(Box.createRigidArea(new Dimension(200, 0)));
-
-            toolPanel.add(tpBox); */
+            /*
+             * JPanel toolPanel = new JPanel();
+             * toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.X_AXIS));
+             * Box tpBox = Box.createHorizontalBox();
+             * tpBox.add(Box.createHorizontalGlue());
+             * //tpBox.add(menuButton);
+             * 
+             * tpBox.add(Box.createRigidArea(new Dimension(1550, 0)));
+             * tpBox.add(Box.createHorizontalGlue());
+             * tpBox.add(helpButton);
+             * tpBox.add(Box.createRigidArea(new Dimension(200, 0)));
+             * 
+             * toolPanel.add(tpBox);
+             */
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -392,21 +401,22 @@ public class HomeView implements ActionListener {
         JMenuBar mb = new JMenuBar();
         JMenu menu = new JMenu("");
         menu.setIcon(iconFactory("Icons/Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-        //JMenuItem sendHelp = new JMenuItem("");
-        //sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-        //sendHelp.addActionListener(helpButtonListener);
+        // JMenuItem sendHelp = new JMenuItem("");
+        // sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT,
+        // BTNTBAR_HEIGHT));
+        // sendHelp.addActionListener(helpButtonListener);
         ImageIcon manageCustomersIcon = iconFactory("Icons/Edit_users_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT);
 
         JMenu manage = new JMenu("Asiakkaiden hallinta");
         manage.setIcon(manageCustomersIcon);
 
-        ImageIcon viewCustomersIcon = iconFactory("Icons/List_customers_icon.png", BTNTBAR_HEIGHT-15, BTNTBAR_HEIGHT-15);
+        ImageIcon viewCustomersIcon = iconFactory("Icons/List_customers_icon.png", BTNTBAR_HEIGHT - 15,
+                BTNTBAR_HEIGHT - 15);
         ImageIcon addCustomersIcon = iconFactory("Icons/List_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT);
-        ImageIcon viewEventsIcon = iconFactory("Icons/Add_customer_icon.png", BTNTBAR_HEIGHT-15, BTNTBAR_HEIGHT-15);
-        
+        ImageIcon viewEventsIcon = iconFactory("Icons/Add_customer_icon.png", BTNTBAR_HEIGHT - 15, BTNTBAR_HEIGHT - 15);
 
         JMenuItem adder, browser, events;
-        
+
         events = new JMenuItem("Tapahtumat");
         events.addActionListener(viewEventsButtonListener);
         events.setIcon(addCustomersIcon);
@@ -421,18 +431,18 @@ public class HomeView implements ActionListener {
         manage.add(adder);
         manage.add(browser);
         mb.add(menu);
-        //JSeparator sep = new JSeparator();
-        //sep.setForeground(Color.white);
-        //mb.add(sep);
-        //mb.add(sendHelp);
+        // JSeparator sep = new JSeparator();
+        // sep.setForeground(Color.white);
+        // mb.add(sep);
+        // mb.add(sendHelp);
 
         JButton sendHelp = new JButton("");
         sendHelp.setIcon(iconFactory("Icons/Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
         sendHelp.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
         sendHelp.setMargin(new Insets(2, 2, 2, 2));
         sendHelp.setBorderPainted(false);
-        //Border border = BorderFactory.createEmptyBorder(2,2,2,2);
-        //sendHelp.setBorder(border);
+        // Border border = BorderFactory.createEmptyBorder(2,2,2,2);
+        // sendHelp.setBorder(border);
         sendHelp.setContentAreaFilled(false);
         sendHelp.addActionListener(helpButtonListener);
         JSeparator sep = new JSeparator();
@@ -445,7 +455,8 @@ public class HomeView implements ActionListener {
         JMenu userMenu = new JMenu("Käyttäjä");
 
         userMenu.setIcon(iconFactory("Icons/Profile_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-        JMenuItem logout = new JMenuItem("Kirjaudu ulos", iconFactory("Icons/Sign_out_Icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        JMenuItem logout = new JMenuItem("Kirjaudu ulos",
+                iconFactory("Icons/Sign_out_Icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
         logout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -453,7 +464,8 @@ public class HomeView implements ActionListener {
             }
         });
 
-        JMenuItem changePassword = new JMenuItem("Vaihda salasana", iconFactory("Icons/Settings_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        JMenuItem changePassword = new JMenuItem("Vaihda salasana",
+                iconFactory("Icons/Settings_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
         changePassword.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -464,7 +476,6 @@ public class HomeView implements ActionListener {
         userMenu.add(changePassword);
         userMenu.add(logout);
         mb.add(userMenu);
-
 
     }
 
@@ -480,7 +491,7 @@ public class HomeView implements ActionListener {
 
     }
 
-    public ImageIcon iconFactory(String iName, int iHeight, int iWidth){
+    public ImageIcon iconFactory(String iName, int iHeight, int iWidth) {
         URL urlImg = Main.class.getResource(iName);
         ImageIcon imgIcon = new ImageIcon(urlImg);
         Image img = imgIcon.getImage().getScaledInstance(iHeight, iWidth, Image.SCALE_SMOOTH);

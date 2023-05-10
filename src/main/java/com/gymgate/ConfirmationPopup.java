@@ -3,15 +3,20 @@ package com.gymgate;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class ConfirmationPopup extends JDialog {
 
+    private static final Logger logger = DbgLogger.getLogger();
     private JButton yesButton;
     private JButton noButton;
 
     public ConfirmationPopup(Component comp) {
         super(SwingUtilities.getWindowAncestor(comp));
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+
+        logger.fine("Showing confirmation popup message");
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

@@ -1,13 +1,15 @@
 package com.gymgate;
+
 import java.util.Random;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Logger;
 
 public class DatabaseFiller {
-
+    private static final Logger logger = DbgLogger.getLogger();
     String[] finnishFirstNames = {
             "Aada", "Aamu", "Aapo", "Aatos", "Ahti", "Aida", "Aili", "Aino", "Akseli", "Alba",
             "Aleksi", "Aliisa", "Alina", "Allan", "Alma", "Alpo", "Amalia", "Amanda", "Anette", "Anni",
@@ -69,6 +71,7 @@ public class DatabaseFiller {
             "Kärpäsenkuja" };
 
     public DatabaseFiller(int qty) {
+        logger.info("Created an instance of DatabaseFiller");
         fillwithUsers();
         fillwithCustomers(qty);
         fillWithEvents(qty);
@@ -78,12 +81,12 @@ public class DatabaseFiller {
         CustomerDatabase.getInstance().registerUser("SaliMake", "make");
         CustomerDatabase.getInstance().registerUser("unkka", "unkka");
         CustomerDatabase.getInstance().registerUser("nyyssis", "kukaloijouluna");
-        System.out.println("added additional users");
+        logger.info("Added additional users");
     }
 
     public void fillwithCustomers(int qty) {
         Random random = new Random();
-        System.out.println("Adding test users for database, please wait....");
+        logger.info("Adding test users for database, please wait....");
         for (int i = 0; i < qty; i++) {
             String firstName = finnishFirstNames[random.nextInt(finnishFirstNames.length)];
             String lastName = finnishLastNames[random.nextInt(finnishLastNames.length)];
@@ -109,11 +112,10 @@ public class DatabaseFiller {
                         phoneNumber, email, mType,
                         address, visits, " ");
             }
-        System.out.println("Customer " + i + " added");
 
         }
-        System.out.println("Added " + qty + " test users in total.");
-        System.out.println("Customerdatabase filled");
+        logger.info("Added " + qty + " test users in total.");
+        logger.info("Customerdatabase filled");
     }
 
     public static String generatePhoneNumber() {
@@ -144,9 +146,9 @@ public class DatabaseFiller {
             String date = getRandomVisitDates();
             int cuId = getRandomCustomerId(qty);
             CustomerDatabase.getInstance().saveEvent(cuId, date);
-            System.out.println("Event " + i + " added");
+            logger.info("Event " + i + " added");
         }
-        System.out.println("Added " + qty + " test events in total.");
+        logger.info("Added " + qty + " test events in total.");
 
     }
 

@@ -26,18 +26,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import java.util.logging.Logger;
 
 public class EventViewer {
+    private static final Logger logger = DbgLogger.getLogger();
     private JTextField startDateField;
     private JTextField endDateField;
     private JTable table;
 
     public EventViewer() {
         createEventViewerGUI();
+        logger.info("Created an instance of EventViewer");
     }
 
     private void createEventViewerGUI() {
-
         JFrame frame = new JFrame("Tapahtumat");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -113,7 +115,7 @@ public class EventViewer {
         try {
             datetemp = toFormat.parse(uDate);
         } catch (ParseException pe) {
-            System.out.println("Error on parsing datetime for events " + pe.getMessage());
+            logger.warning("Error on formating date for display: " + pe.getMessage());
         }
         SimpleDateFormat formatted = new SimpleDateFormat("dd.MM.yyyy");
         return formatted.format(datetemp);
@@ -125,7 +127,7 @@ public class EventViewer {
         try {
             datetemp = toFormat.parse(uDate);
         } catch (ParseException pe) {
-            System.out.println("Error on parsing datetime for events " + pe.getMessage());
+            logger.warning("Error on parsing datetime for events: " + pe.getMessage());
         }
         SimpleDateFormat formatted = new SimpleDateFormat("yyyy-MM-dd");
         String temp = formatted.format(datetemp) + "T00:00:00";
@@ -157,7 +159,7 @@ public class EventViewer {
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            System.out.println("Error retrieving customers from DB " + e.getMessage());
+            logger.warning("Error retrieving customers from DB " + e.getMessage());
         }
 
     }
@@ -185,7 +187,7 @@ public class EventViewer {
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            System.out.println("Error retrieving customers from DB " + e.getMessage());
+            logger.warning("Error retrieving customers from DB " + e.getMessage());
         }
 
     }

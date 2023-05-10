@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import java.util.logging.Logger;
 
 import org.apache.commons.codec.digest.Crypt;
 
@@ -27,9 +28,10 @@ public class ChangePasswordGUI {
     JPasswordField newPassField = null;
     JPasswordField newPassRepeatField = null;
     JFrame changePassFrame = null;
+    private static final Logger logger = DbgLogger.getLogger();
 
     public ChangePasswordGUI(String username) {
-
+        logger.info("Created an instance of ChangePasswordGUI");
         changePassFrame = new JFrame("Vaihda salasanasi");
 
         ActionListener saveButtonListener = new ActionListener() {
@@ -103,7 +105,7 @@ public class ChangePasswordGUI {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         JButton saveButton = new JButton("Tallenna");
-    
+
         saveButton.addActionListener(saveButtonListener);
 
         JButton cancelButton = new JButton("Peruuta");
@@ -123,27 +125,36 @@ public class ChangePasswordGUI {
 
     public void changePassword() {
         if (!checkIfCorrectPass()) {
-            HidingPopup inCorrectPass = new HidingPopup(changePassFrame, "Väärä salasana", 1000, "Icons/Denied_icon.png");
+            logger.info("User failed to change password. Reason: Wrong old password");
+            HidingPopup inCorrectPass = new HidingPopup(changePassFrame, "Väärä salasana", 1000,
+                    "Icons/Denied_icon.png");
             emptyFields();
             inCorrectPass.showPopup();
-        }else if (!comparePasswords()) {
-            HidingPopup nonMatchPass = new HidingPopup(changePassFrame, "Salasanat eivät täsmää", 1000, "Icons/Denied_icon.png");
+        } else if (!comparePasswords()) {
+            logger.info("User failed to change password. Reason: New passwords do not match");
+            HidingPopup nonMatchPass = new HidingPopup(changePassFrame, "Salasanat eivät täsmää", 1000,
+                    "Icons/Denied_icon.png");
             emptyFields();
             nonMatchPass.showPopup();
-        }else if(identicalPasswords()){
-            HidingPopup samePassPopup = new HidingPopup(changePassFrame, "Uusi salasana ei voi olla sama kuin vanha", 2000, "Icons/Denied_icon.png");
+        } else if (identicalPasswords()) {
+            logger.info("User failed to change password. Reason: Attempted to use same password as the present one");
+            HidingPopup samePassPopup = new HidingPopup(changePassFrame, "Uusi salasana ei voi olla sama kuin vanha",
+                    2000, "Icons/Denied_icon.png");
             emptyFields();
+            
             samePassPopup.showPopup();
         } else {
             CustomerDatabase.getInstance().changePassword(getUsername(), getNewPass());
-            HidingPopup successPopup = new HidingPopup(changePassFrame, "Salasana vaihdettu", 2000, "Icons/checkMark.png");
+            logger.info("User changed the password successfully");
+            HidingPopup successPopup = new HidingPopup(changePassFrame, "Salasana vaihdettu", 2000,
+                    "Icons/checkMark.png");      
             successPopup.showPopup();
             changePassFrame.dispose();
         }
 
     }
 
-    public void emptyFields(){
+    public void emptyFields() {
         this.oldPassField.setText("");
         this.newPassField.setText("");
         this.newPassRepeatField.setText("");

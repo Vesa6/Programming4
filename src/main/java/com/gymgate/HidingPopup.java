@@ -7,9 +7,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-
+import java.util.logging.Logger;
 
 public class HidingPopup extends JDialog {
+    private static final Logger logger = DbgLogger.getLogger();
 
     private int delay_in_ms;
     private final Timer timer;
@@ -17,9 +18,10 @@ public class HidingPopup extends JDialog {
     public HidingPopup(Component parentComponent, String message, int delay) {
         super(SwingUtilities.getWindowAncestor(parentComponent));
         this.delay_in_ms = delay;
+        logger.fine("Showing popup with message: " + message + " for " + delay / 1000 + " seconds");
 
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        setSize(new Dimension(450,100));
+        setSize(new Dimension(450, 100));
 
         JLabel messageLabel = new JLabel(message, SwingConstants.CENTER);
         messageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -28,8 +30,8 @@ public class HidingPopup extends JDialog {
         add(messageLabel);
         add(Box.createVerticalGlue());
 
-        //This makes the window size match the components
-        
+        // This makes the window size match the components
+
         setLocationRelativeTo(parentComponent);
 
         /*
@@ -48,6 +50,8 @@ public class HidingPopup extends JDialog {
         super(SwingUtilities.getWindowAncestor(parentComponent));
         this.delay_in_ms = delay;
 
+        logger.fine("Showing popup with message: " + message + " for " + delay / 1000 + " seconds");
+
         URL url = HidingPopup.class.getResource(imagePath);
         ImageIcon imageIcon = new ImageIcon(url);
         Image image = imageIcon.getImage();
@@ -63,7 +67,7 @@ public class HidingPopup extends JDialog {
         add(messageLabel);
         add(Box.createVerticalGlue());
 
-        //This makes the window size match the components
+        // This makes the window size match the components
         pack();
         setLocationRelativeTo(parentComponent);
 

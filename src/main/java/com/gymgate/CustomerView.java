@@ -36,15 +36,17 @@ import javax.swing.JTextField;
 import javax.swing.Popup;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import java.util.logging.Logger;
 
 public class CustomerView {
+    private static final Logger logger = DbgLogger.getLogger();
 
     public static String confirmationHelper;
     private JTextField nameField;
     private JTable table;
 
     CustomerView() {
-
+        logger.info("Created a new instance of CustomerView");
         createCustomerViewGUI();
     }
 
@@ -165,7 +167,7 @@ public class CustomerView {
                                 model.removeRow(row);
                                 confirmPop.dispose();
                             } else {
-                                
+
                             }
                         }
                     });
@@ -394,17 +396,20 @@ public class CustomerView {
                                     membershipField.getText(), Integer.parseInt(visits.getText()));
                         }
 
-                        HidingPopup popup = new HidingPopup(editFrame, "Muutos tallennettu", 2000, "Icons/checkMark.png");
+                        HidingPopup popup = new HidingPopup(editFrame, "Muutos tallennettu", 2000,
+                                "Icons/checkMark.png");
                         popup.showPopup();
 
                     } catch (NumberFormatException e1) {
 
-                        HidingPopup popup = new HidingPopup(editFrame, "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
+                        HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
                         popup.showPopup();
 
                     } catch (SQLException e1) {
-                        
-                        HidingPopup popup = new HidingPopup(editFrame, "Muutos epäonnistui, tietokantaongelma. Ottakaa yhteyttä tukeen.", 2000);
+
+                        HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos epäonnistui, tietokantaongelma. Ottakaa yhteyttä tukeen.", 2000);
                         popup.showPopup();
 
                     }
@@ -439,7 +444,7 @@ public class CustomerView {
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            System.out.println("Error retrieving customers from DB " + e.getMessage());
+            logger.warning("Error retrieving customers from DB " + e.getMessage());
         }
 
     }
@@ -465,7 +470,7 @@ public class CustomerView {
                 model.addRow(rowData);
             }
         } catch (SQLException e) {
-            System.out.println("Error retrieving customers from DB " + e.getMessage());
+            logger.warning("Error retrieving customers from DB " + e.getMessage());
         }
 
     }
