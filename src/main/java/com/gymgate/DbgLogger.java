@@ -10,7 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.logging.*;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DbgLogger {
@@ -94,22 +97,23 @@ public class DbgLogger {
          * dummy RFID UI
          */
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
-        if (!checkIfExists()) {
-            JSONObject json = new JSONObject();
-            String jsonPath = configFile;
-            json.put("logging_level", "severe");
-            json.put("display_dummy_rfid", false);
-            setLogLevel("severe");
-            setDisplayDummyRFID(false);
-            try {
-                FileWriter fw = new FileWriter(jsonPath);
-                fw.write(json.toString());
-                fw.close();
-            } catch (IOException e) {
-                logger.warning("Failed to create default config file");
+        if (checkIfExists()) {
+            if (handleExistingFile()) {
+                return;
             }
-        } else {
-            handleExistingFile();
+        }
+        JSONObject json = new JSONObject();
+        String jsonPath = configFile;
+        json.put("logging_level", "severe");
+        json.put("display_dummy_rfid", false);
+        setLogLevel("severe");
+        setDisplayDummyRFID(false);
+        try {
+            FileWriter fw = new FileWriter(jsonPath);
+            fw.write(json.toString());
+            fw.close();
+        } catch (IOException e) {
+            logger.warning("Failed to create default config file");
         }
 
     }
@@ -123,7 +127,7 @@ public class DbgLogger {
         return false;
     }
 
-    private static void handleExistingFile() {
+    private static boolean handleExistingFile() {
         /*
          * Reads the configurations from existing config file
          */
@@ -137,12 +141,27 @@ public class DbgLogger {
                 sb.append(filecontent);
             }
             br.close();
-            JSONObject json = new JSONObject(sb.toString());
-            setLogLevel(json.getString("logging_level"));
-            setDisplayDummyRFID(json.getBoolean("display_dummy_rfid"));
+            try {
+                JSONObject json = new JSONObject(sb.toString());
+                if (json.has("logging_level") && json.has("display_dummy_rfid")) {
+                    String[] levels = { "fine", "info", "warning", "severe" };
+                    if ((Arrays.asList(levels).contains(json.getString("logging_level").toLowerCase()))
+                            && (json.optBoolean("display_dummy_rfid"))) {
+                        setLogLevel(json.getString("logging_level"));
+                        setDisplayDummyRFID(json.getBoolean("display_dummy_rfid"));
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            } catch (JSONException je) {
+                logger.warning("Problems with JSON file. Generating new one");
+            }
         } catch (IOException e) {
             logger.warning("Problems reading your configuration file");
+
         }
+        return false;
     }
 
     public static void generateCrashLog() {
