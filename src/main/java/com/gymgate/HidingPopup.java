@@ -32,8 +32,6 @@ public class HidingPopup extends JDialog {
         add(messageLabel);
         add(Box.createVerticalGlue());
 
-        // This makes the window size match the components
-
         setLocationRelativeTo(parentComponent);
 
         /*

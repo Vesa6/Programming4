@@ -9,8 +9,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Date;
+import java.util.IllegalFormatFlagsException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,7 +46,7 @@ public class CustomerView {
     private JTable table;
 
     CustomerView() {
-        /* 
+        /*
          * Shows list of customers with a possibility to edit or remove them
          */
         logger.info("Created a new instance of CustomerView");
@@ -140,6 +148,8 @@ public class CustomerView {
                         openModifyCustomerView(CustomerDatabase.getInstance().getCustomerById(customerId));
                     } catch (SQLException sqe) {
                         logger.warning("Unable to modify customers: " + sqe);
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
                     }
 
                 });
@@ -184,7 +194,7 @@ public class CustomerView {
 
     }
 
-    private static void openModifyCustomerView(ResultSet customer) throws SQLException {
+    private static void openModifyCustomerView(ResultSet customer) throws SQLException, ParseException {
 
         JFrame editFrame = new JFrame("Muokkaa asiakasta");
         editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -248,12 +258,15 @@ public class CustomerView {
         JTextField visits = new JTextField(20);
         visits.setMaximumSize(textBoxDimension);
 
+        JLabel text = new JLabel("Päivämäärä (vvvv-kk-pp):");
+
         // Make the fields invisible unless radiobutton activated
         months.setVisible(false);
         visits.setVisible(false);
-
+        
         JRadioButton membershipType = new JRadioButton("Kuukausijäsenyys");
         JRadioButton membershipType2 = new JRadioButton("Kertakäynti");
+
 
         /*
          * This action listener is for the radio buttons.
@@ -266,9 +279,11 @@ public class CustomerView {
                 if (e.getSource() == membershipType) {
                     months.setVisible(true);
                     visits.setVisible(false);
+                    text.setVisible(true);
                 } else if (e.getSource() == membershipType2) {
                     months.setVisible(false);
                     visits.setVisible(true);
+                    text.setVisible(false);
                 }
                 leftPanel.revalidate();
                 leftPanel.repaint();
@@ -282,28 +297,26 @@ public class CustomerView {
         membershipButtons.add(membershipType2);
 
         leftPanel.add(membershipType);
+        leftPanel.add(text);
         leftPanel.add(months);
         leftPanel.add(Box.createVerticalGlue());
 
         JTextField membershipField = new JTextField(20);
         membershipField.setMaximumSize(textBoxDimension);
-        String membershipDate = customer.getString("membership_end");
-        membershipField.setText(membershipDate);
+        String membershipDate = customer.getString("membership_end");        
 
         if (customer.getString("membership_type").equals("Kuukausijäsenyys")) {
-            membershipType2.setEnabled(false);
             membershipType.setSelected(true);
-
-            leftPanel.add(new JLabel("Jäsenyys päättyy:"));
-            leftPanel.add(membershipField);
-            leftPanel.add(Box.createVerticalGlue());
-            leftPanel.remove(membershipType);
-
+            text.setVisible(true);
+            months.setText(membershipDate);
+            months.setVisible(true);
+            visits.setVisible(false);
         } else {
             membershipType2.setSelected(true);
+            text.setVisible(false);
             visits.setText(customer.getString("visits"));
-            membershipType.setEnabled(false);
             visits.setVisible(true);
+            months.setVisible(false);
         }
 
         leftPanel.add(membershipType2);
@@ -372,41 +385,93 @@ public class CustomerView {
         ActionListener saveListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                if (e.getSource() == saveButton) {
-
-                    try {
-                        String membershipType = customer.getString("membership_type");
-                        if (membershipType.equals("Kuukausijäsenyys")) {
-                            CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"),
-                                    firstNameField.getText(), lastNameField.getText(), addressField.getText(),
-                                    phoneNumberField.getText(), emailField.getText(), notesField.getText(),
-                                    membershipField.getText(), 0);
-                        } else if (customer.getString("membership_type").equals("Kertakäynti")) {
-                            membershipType2.setEnabled(false);
-                            CustomerDatabase.getInstance().updateCustomer(customer.getInt("customer_id"),
-                                    firstNameField.getText(), lastNameField.getText(), addressField.getText(),
-                                    phoneNumberField.getText(), emailField.getText(), notesField.getText(),
-                                    membershipField.getText(), Integer.parseInt(visits.getText()));
-                        }
-
-                        HidingPopup popup = new HidingPopup(editFrame, "Muutos tallennettu", 2000,
-                                "Icons/checkMark.png");
-                        popup.showPopup();
-
-                    } catch (NumberFormatException e1) {
-
-                        HidingPopup popup = new HidingPopup(editFrame,
-                                "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
-                        popup.showPopup();
-
-                    } catch (SQLException e1) {
-
-                        HidingPopup popup = new HidingPopup(editFrame,
-                                "Muutos epäonnistui, tietokantaongelma. Ottakaa yhteyttä tukeen.", 2000);
-                        popup.showPopup();
-
+    
+                // Check phone number. Only the first character can be '+', all the rest need to
+                // be digits
+                int u = 0;
+                for (char num : phoneNumberField.getText().toCharArray()) {
+                    if (num == '+' && u == 0) {
+                        u++;
+                        continue;
                     }
+                    if (!Character.isDigit(num)) {
+                        HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos epäonnistui, puhelinnumero on virheellisessä muodossa.", 2000);
+                        popup.showPopup();
+                        logger.info("Modifying user failed, phone number is not in correct format.");
+                        return;
+                    }
+                }
+    
+                if ((e.getSource() == saveButton) && (membershipType.isSelected())) {
+    
+                    DateTimeFormatter sqlDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    LocalDate currentDate = LocalDate.now();
+                    String currentDateString = currentDate.format(sqlDateFormat);
+                    String endDateString = months.getText();
+    
+                    String memberTypeSelected = "Kuukausijäsenyys";
+    
+                    if ((firstNameField.getText().isEmpty()) || (lastNameField.getText().isEmpty()) || (phoneNumberField.getText().isEmpty()) || (emailField.getText().isEmpty()) ||
+                    months.getText().isEmpty() || (addressField.getText().isEmpty())) {
+                        HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos epäonnistui, kaikki kentät on täytettävä.", 2000);
+                        popup.showPopup();
+                        logger.info("Modifying user failed, all fields are not filled.");
+                        return;
+                    }
+    
+                    try {
+                        CustomerDatabase.getInstance().updateCustomer(firstNameField.getText(), lastNameField.getText(),
+                                addressField.getText(), phoneNumberField.getText(), emailField.getText(),
+                                notesField.getText(), endDateString, 0, currentDateString, memberTypeSelected, customer.getInt("customer_id"));
+                    } catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
+    
+                    HidingPopup popup = new HidingPopup(editFrame,
+                            "Muutos tallennettu.", 2000, "Icons/checkMark.png");
+                    popup.showPopup();
+                    editFrame.dispose();
+    
+                } else if ((e.getSource() == saveButton) && (membershipType2.isSelected())) {
+    
+                    String memberTypeSelected = "Kertakäynti";
+    
+                    if ((firstNameField.getText().isEmpty()) || (lastNameField.getText().isEmpty()) || (phoneNumberField.getText().isEmpty()) || (emailField.getText().isEmpty()) ||
+                    visits.getText().isEmpty() || (addressField.getText().isEmpty())) {
+                        HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos epäonnistui, kaikki kentät on täytettävä.", 2000);
+                        popup.showPopup();
+                        logger.info("Modifying user failed, all fields are not filled.");
+                        return;
+                    }
+    
+                    try {
+                        CustomerDatabase.getInstance().updateCustomer(firstNameField.getText(),
+                                lastNameField.getText(), addressField.getText(),
+                                phoneNumberField.getText(), emailField.getText(), notesField.getText(),
+                                "NULL", Integer.valueOf(visits.getText()),
+                                "NULL", memberTypeSelected, customer.getInt("customer_id"));
+    
+                        HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos talennettu.", 2000, "Icons/checkMark.png");
+                        popup.showPopup();
+                        editFrame.dispose();
+    
+                    }
+    
+                    catch (NumberFormatException nE) 
+
+                    {
+                    HidingPopup popup = new HidingPopup(editFrame,
+                                "Muutos epäonnistui, käyntikerrat voivat olla vain kokonaislukuja.", 2000);
+                                logger.info("Modifying user failed, visits can only be integers.");
+                        popup.showPopup();
+                    } catch (SQLException e1) {
+                            
+                            e1.printStackTrace();
+                        }
 
                     // Close the frame
                     Component component = (Component) e.getSource();
@@ -415,9 +480,9 @@ public class CustomerView {
                 }
             }
         };
-
-        saveButton.addActionListener(saveListener);
+                saveButton.addActionListener(saveListener);
     }
+            
 
     private static void defaultCustomerTableLabels(JTable table) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -448,11 +513,11 @@ public class CustomerView {
         model.setRowCount(0);
         String fName = "";
         String lName = "";
-        try{
-        fName = temp[0].substring(0, 1).toUpperCase() + temp[0].substring(1).toLowerCase();
-        lName = temp[1].substring(0, 1).toUpperCase() + temp[1].substring(1).toLowerCase();
-        }catch (Exception ae){
-            logger.warning("Soita käyttajalle ja kaske laittaa valilyonti tai muuten hyva ei heilu");
+        try {
+            fName = temp[0].substring(0, 1).toUpperCase() + temp[0].substring(1).toLowerCase();
+            lName = temp[1].substring(0, 1).toUpperCase() + temp[1].substring(1).toLowerCase();
+        } catch (ArrayIndexOutOfBoundsException ae) {
+            
         }
         try {
 

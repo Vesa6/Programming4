@@ -83,9 +83,6 @@ public class HomeView implements ActionListener {
                 CustomerDatabase.getInstance().addRFIDEvent(Integer.valueOf(customerField.getText()));
                 customerField.setText("");
 
-                // EventViewer.frame.dispose();
-                // new EventViewer();
-
             }
         });
 
@@ -345,7 +342,7 @@ public class HomeView implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                 //Check phonenumber. Only the first character can be +, all the rest need to be
+                 //Check phonenumber. Only the first character can be +, all the rest need to be numbers.
                  for (char num : phoneNumberField.getText().toCharArray()) {
 
                     int u = 0;
@@ -576,7 +573,7 @@ public class HomeView implements ActionListener {
 
         home.setJMenuBar(mb);
 
-        JMenu userMenu = new JMenu("Käyttäjä");
+        JMenu userMenu = new JMenu(usernameField.getText());
 
         userMenu.setIcon(iconFactory("Icons/Profile_icon.png", TB_HEIGHT, TB_HEIGHT));
         JMenuItem logout = new JMenuItem("Kirjaudu ulos",

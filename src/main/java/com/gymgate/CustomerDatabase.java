@@ -381,33 +381,36 @@ public class CustomerDatabase {
         }
     }
 
-    public void updateCustomer(int customer_id, String first_name, String last_name, String address,
-            String phone_number, String email, String additional_information, String membership_end, int visits) {
-        /* 
-         * Will be called if the customer is edited
-         */
-        String updateCustomer = "UPDATE Customers SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, additional_information = ?, membership_end = ?, visits = ? WHERE customer_id = ?";
+    public void updateCustomer(String first_name, String last_name, String address,
+                           String phone_number, String email, String additional_information, 
+                           String membership_end, int visits, String membership_start, String membership_type, int customer_id) {
+    /* 
+     * Will be called if the customer is edited
+     */
+    String updateCustomer = "UPDATE Customers SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, additional_information = ?, membership_end = ?, visits = ?, membership_start = ?, membership_type = ? WHERE customer_id = ?";
 
-        try {
+    try {
 
-            PreparedStatement preparedStatement = connection.prepareStatement(updateCustomer);
-            preparedStatement.setString(1, first_name);
-            preparedStatement.setString(2, last_name);
-            preparedStatement.setString(3, address);
-            preparedStatement.setString(4, phone_number);
-            preparedStatement.setString(5, email);
-            preparedStatement.setString(6, additional_information);
-            preparedStatement.setString(7, membership_end);
-            preparedStatement.setInt(8, visits);
-            preparedStatement.setInt(9, customer_id);
-            preparedStatement.executeUpdate();
-            preparedStatement.close();
-            logger.info("Updated info of customer: " + first_name + " " + last_name);
-        } catch (SQLException e) {
-            logger.warning("Error updating customer: " + e.getMessage());
-        }
-
+        PreparedStatement preparedStatement = connection.prepareStatement(updateCustomer);
+        preparedStatement.setString(1, first_name);
+        preparedStatement.setString(2, last_name);
+        preparedStatement.setString(3, address);
+        preparedStatement.setString(4, phone_number);
+        preparedStatement.setString(5, email);
+        preparedStatement.setString(6, additional_information);
+        preparedStatement.setString(7, membership_end);
+        preparedStatement.setInt(8, visits);
+        preparedStatement.setString(9, membership_start);
+        preparedStatement.setString(10, membership_type);
+        preparedStatement.setInt(11, customer_id);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+        logger.info("Updated info of customer: " + first_name + " " + last_name);
+    } catch (SQLException e) {
+        logger.warning("Error updating customer: " + e.getMessage());
     }
+}
+
 
     public ResultSet getEvents() {
         /* 
@@ -417,7 +420,7 @@ public class CustomerDatabase {
             Statement statement = connection.createStatement();
             String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id ORDER BY e.event_id DESC";
             ResultSet results = statement.executeQuery(resultQuery);
-            //TODO add close():s?
+
             return results;
 
         } catch (SQLException e) {
