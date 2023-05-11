@@ -449,8 +449,8 @@ public class CustomerView {
         String fName = "";
         String lName = "";
         try{
-        fName = temp[0];
-        lName = temp[1];
+        fName = temp[0].substring(0, 1).toUpperCase() + temp[0].substring(1).toLowerCase();
+        lName = temp[1].substring(0, 1).toUpperCase() + temp[1].substring(1).toLowerCase();
         }catch (ArrayIndexOutOfBoundsException ae){
             logger.warning("Soita käyttajalle ja kaske laittaa valilyonti tai muuten hyva ei heilu");
         }

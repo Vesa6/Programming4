@@ -15,10 +15,10 @@ public class DatabaseFiller {
      */
     private static final Logger logger = DbgLogger.getLogger();
     //This integer determines that how many of the test instances are created
-    private static int QUANTITY = 30;
+    private static int QUANTITY = 1000;
     private static LocalDateTime lastVisit = null;
-    String[] finnishFirstNames = {
-            "Aada", "Aamu", "Aapo", "Aatos", "Ahti", "Aida", "Aili", "Aino", "Akseli", "Alba",
+    String[] firstnames = {
+            "Aku", "Aada", "Aamu", "Aapo", "Aatos", "Ahti", "Aida", "Aili", "Aino", "Akseli", "Alba",
             "Aleksi", "Aliisa", "Alina", "Allan", "Alma", "Alpo", "Amalia", "Amanda", "Anette", "Anni",
             "Anselmi", "Antero", "Antti", "Arja", "Armas", "Arne", "Arto", "Asta", "Aune", "Auvo",
             "Eemeli", "Eerika", "Eeva", "Eila", "Eino", "Eira", "Elias", "Elli", "Elma", "Elmeri",
@@ -27,12 +27,12 @@ public class DatabaseFiller {
             "Iida", "Iina", "Iiris", "Iiro", "Ilkka", "Ilona", "Ilpo", "Inari", "Inka", "Into",
             "Irene", "Irma", "Isabella", "Ismael", "Ismo", "Isto", "Itä", "Jaakko", "Jani", "Janika",
             "Janne", "Jarmo", "Jatta", "Jere", "Jimi", "Joel", "Johanna", "Joonas", "Jorma", "Juhani",
-            "Juhannus", "Juha-Pekka", "Juho", "Jukka", "Julia", "Julius", "Jussi", "Jyri", "Järvi", "Järvilehto",
+            "Juhannus", "Juha-Pekka", "Juho", "Jukka", "Julia", "Julius", "Jussi", "Jyri", "Järvi", "Niilo",
             "Kai", "Kaisa", "Kalevi", "Kari", "Karoliina", "Kasper", "Kati", "Katja", "Katri", "Kauno",
-            "Keijo", "Kerttu", "Kimi", "Kirsi", "Klaus", "Kosti", "Krista", "Kristian", "Kristiina", "Kukka"
+            "Keijo", "Kerttu", "Kimi", "Kirsi", "Klaus", "Kosti", "Krista", "Kristian", "Kristiina", "Kukka", "Shrek", "Käärijä"
     };
 
-    String[] finnishLastNames = {
+    String[] lastnames = {
             "Aalto", "Ahde", "Ahola", "Ahonen", "Ahtisaari", "Ahto", "Airaksinen", "Ala-Fossi", "Alakoski", "Alanko",
             "Alatalo", "Alho", "Allén", "Alm", "Alén", "Alén-Savikko", "Anttonen", "Arajuuri", "Arnold", "Arola",
             "Aronen", "Asikainen", "Autio", "Berg", "Blomqvist", "Borg", "Borgström", "Bremer", "Brännback", "Collan",
@@ -52,10 +52,10 @@ public class DatabaseFiller {
             "Huttunen", "Hämäläinen", "Härkönen", "Häyrinen", "Hölttä", "Ihalainen", "Ikonen", "Ilvesmäki", "Inkinen",
             "Iso-Kuortti",
             "Itkonen", "Jaakkola", "Jalonen", "Janhonen", "Jansson", "Jokela", "Jokinen", "Jokipii", "Joutsen",
-            "Juolahti"
+            "Juolahti", "Taateli", "Ogre", "Ankka"
     };
 
-    String[] finnishAddresses = {
+    String[] addresses = {
             "Ahvenistontie", "Ampujantie", "Ankkalammintie", "Arkkitehdinkatu", "Asemakatu", "Autotie",
             "Eläintarhantie", "Erottajankatu", "Etuniementie", "Fleminginkatu",
             "Fredrikinkatu", "Gummeruksenkatu", "Haapaniemenkatu", "Hakaniemenkatu", "Hannikaisenkatu",
@@ -64,7 +64,7 @@ public class DatabaseFiller {
             "Hämeentie", "Isonnevantie", "Iso Roobertinkatu", "Itämerenkatu",
             "Jaalankatu", "Jämsänkatu", "Jarrumiehenkatu", "Juurakkotie", "Jyväskylänkatu", "Järvikyläntie",
             "Kaarlenkatu", "Kaarontie", "Kaartintie", "Kahvelitie",
-            "Kahvitauontie", "Kalliontie", "Kamppi Center", "Kangasalanväylä", "Kankurinkatu", "Kannaksentie",
+            "Kahvitauontie", "Kalliontie", "Kauppakeskus Valkea", "Kangasalanväylä", "Kankurinkatu", "Kannaksentie",
             "Kantakaupunki", "Kapteeninkatu", "Kapteenintie", "Kapteeninviita",
             "Karhunkatu", "Katajanokanlaituri", "Kauppakatu", "Kauppiaskatu", "Keilaranta", "Keinulaudantie",
             "Keisarinviitta", "Kekkosentie", "Kelohonkatie", "Kellonsoittajankatu",
@@ -73,7 +73,7 @@ public class DatabaseFiller {
             "Kivipelto", "Klaavuntie", "Koirasaarentie", "Kojonkatu", "Kolmihaarankatu", "Kolmipellonkatu",
             "Korkeavuorenkatu", "Koskelantie", "Koskenrannanpuisto", "Koskikatu",
             "Kotkankatu", "Kotkatie", "Kotkavuorenkatu", "Koukkuniementie", "Kouluvuorenkatu", "Kruunuvuorenkatu",
-            "Kultakorventie", "Kumpulantie", "Kuninkaankatu", "Kuopiontie",
+            "Kultakorventie", "Timbuktu", "Kuninkaankatu", "Kuopiontie",
             "Kurkimäentie", "Kurvinen", "Kustaankatu", "Kutomotie", "Kyläsaarenkuja", "Käenkuja", "Käpylänkuja",
             "Kärpäsenkuja" };
 
@@ -81,7 +81,7 @@ public class DatabaseFiller {
         logger.info("Created an instance of DatabaseFiller");
         fillwithUsers();
         fillwithCustomers(QUANTITY);
-        fillWithEvents(QUANTITY);
+        fillWithEvents(QUANTITY * 2);
     }
 
     public void fillwithUsers() {
@@ -90,7 +90,7 @@ public class DatabaseFiller {
          */
         CustomerDatabase.getInstance().registerUser("SaliMake", "make");
         CustomerDatabase.getInstance().registerUser("unkka", "unkka");
-        CustomerDatabase.getInstance().registerUser("nyyssis", "kukaloijouluna");
+        CustomerDatabase.getInstance().registerUser("nyyssis", "joulupukki");
         logger.info("Added additional users");
     }
 
@@ -101,12 +101,12 @@ public class DatabaseFiller {
         Random random = new Random();
         logger.info("Adding test users for database, please wait....");
         for (int i = 0; i < qty; i++) {
-            String firstName = finnishFirstNames[random.nextInt(finnishFirstNames.length)];
-            String lastName = finnishLastNames[random.nextInt(finnishLastNames.length)];
+            String firstName = firstnames[random.nextInt(firstnames.length)];
+            String lastName = lastnames[random.nextInt(lastnames.length)];
             String email = firstName + "." + lastName + "@sahkoposti.fi";
             String phoneNumber = generatePhoneNumber();
             int addressNumber = random.nextInt(1000);
-            String address = finnishAddresses[random.nextInt(finnishAddresses.length)] + " " + addressNumber;
+            String address = addresses[random.nextInt(addresses.length)] + " " + addressNumber;
             String mType = "";
             int coin = random.nextInt(2);
             if (coin == 1) {

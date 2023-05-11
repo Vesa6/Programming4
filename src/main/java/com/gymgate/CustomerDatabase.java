@@ -78,7 +78,7 @@ public class CustomerDatabase {
 
             // Below class is to create a test database with 1000 random customers to test
             // the functionalities of it
-            new DatabaseFiller();
+            //new DatabaseFiller();
 
             return true;
         }
