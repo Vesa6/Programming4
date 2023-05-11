@@ -27,7 +27,7 @@ public class EventViewer {
     private JTextField endDateField;
     private JTable table;
     public static JFrame frame = null;
-    
+
     public EventViewer() {
         createEventViewerGUI();
         logger.info("Created an instance of EventViewer");
@@ -115,30 +115,36 @@ public class EventViewer {
         return formatted.format(datetemp);
     }
 
-    private static String formatDateForSearch(String uDate) {
+    private static String formatDateForSearch(String uDate, boolean end) throws ParseException {
         SimpleDateFormat toFormat = new SimpleDateFormat("dd.MM.yyyy");
         Date datetemp = null;
-        try {
-            datetemp = toFormat.parse(uDate);
-        } catch (ParseException pe) {
-            logger.warning("Error on parsing datetime for events: " + pe.getMessage());
-        }
+        datetemp = toFormat.parse(uDate);
         SimpleDateFormat formatted = new SimpleDateFormat("yyyy-MM-dd");
-        String temp = formatted.format(datetemp) + "T00:00:00";
-        return temp;
+        if (!end){
+            return formatted.format(datetemp) + "T00:00:00";
+        }
+           return formatted.format(datetemp) + "T23:59:59";
     }
 
     private static void updateEventTableLabels(JTable table, String start, String end) {
-        start = formatDateForSearch(start);
-        end = formatDateForSearch(end);
-        //TODO: CHECK
+        try {
+            start = formatDateForSearch(start, false);
+            end = formatDateForSearch(end, true);
+            System.out.println(start + " " + end);
+        } catch (ParseException e) {
+            logger.warning("Error on parsing datetime for events: " + e.getMessage());
+            falseResults(table, start, end);
+            return;
+        }
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 
         try {
 
             ResultSet resultSet = CustomerDatabase.getInstance().selectEventDate(start, end);
-
+            if (resultSet == null) {
+                falseResults(table, start, end);
+            }
             while (resultSet.next()) {
                 String temp = resultSet.getString("date");
                 String name = resultSet.getString("name");
@@ -157,6 +163,20 @@ public class EventViewer {
             logger.warning("Error retrieving customers from DB " + e.getMessage());
         }
 
+    }
+
+    private static void falseResults(JTable table, String s1, String s2) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0);
+        String[] message = { "Ei hakutuloksia kyselyllä: " + s1 + " - " + s2,
+                "Tarkista myös, että päivämäärät ovat muotoa dd.mm.YYYY" };
+
+        for (int i = 0; i <= 1; i++) {
+            Object[] rowData = {
+                    "", "", message[i], "", 0
+            };
+            model.addRow(rowData);
+        }
     }
 
     public static void defaultEventTableLabels(JTable table) {

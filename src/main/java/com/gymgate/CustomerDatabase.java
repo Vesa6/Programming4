@@ -267,10 +267,6 @@ public class CustomerDatabase {
     public void addRFIDEvent(int id) {
         /*
          * Adds event from RFID scan to events
-         * TODO: kertakäynneille vähennä yksi käyntikerta, jos tulos -1 nii älä lisää
-         * tapahtumaa
-         * TODO: jos kuukausikäynti ja DT.now > asiakkuus päättyy päivä niin älä lisää
-         * tapahtumaa
          */
         if(!ac.checkAccess(id)){
             return;

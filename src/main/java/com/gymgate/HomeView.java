@@ -74,6 +74,14 @@ public class HomeView implements ActionListener {
         svButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String input = customerField.getText();
+                try{
+                    Integer.parseInt(input);
+                }catch (NumberFormatException ne){
+                    logger.warning("Invalid format of customer id: " + input + " : " + e);
+                    customerField.setText("");
+                    return;
+                }
                 CustomerDatabase.getInstance().addRFIDEvent(Integer.valueOf(customerField.getText()));
                 customerField.setText("");
 

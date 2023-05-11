@@ -425,7 +425,6 @@ public class CustomerView {
         try {
 
             ResultSet resultSet = CustomerDatabase.getInstance().getCustomers();
-
             while (resultSet.next()) {
                 int customerId = resultSet.getInt("customer_id");
                 String firstName = resultSet.getString("first_name");
@@ -447,10 +446,17 @@ public class CustomerView {
         String temp[] = name.split(" ", 2); // splits into first name and last name
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
-
+        String fName = "";
+        String lName = "";
+        try{
+        fName = temp[0];
+        lName = temp[1];
+        }catch (ArrayIndexOutOfBoundsException ae){
+            logger.warning("Soita käyttajalle ja kaske laittaa valilyonti tai muuten hyva ei heilu");
+        }
         try {
 
-            ResultSet resultSet = CustomerDatabase.getInstance().searchByName(temp[0], temp[1]);
+            ResultSet resultSet = CustomerDatabase.getInstance().searchByName(fName, lName);
 
             while (resultSet.next()) {
                 int customerId = resultSet.getInt("customer_id");

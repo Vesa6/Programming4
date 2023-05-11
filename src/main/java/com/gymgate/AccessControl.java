@@ -28,6 +28,10 @@ public class AccessControl {
         // = ?";
         // membership_type, visits, membership_end FROM Customers WHERE customer_id =
         // ?";
+        if(!CustomerDatabase.getInstance().customerExists(customerid)){
+            logger.warning("User " + customerid + " does not exist");
+            return false;
+        }
         this.customerId = customerid;
         boolean isValid = true;
         try {
@@ -65,9 +69,7 @@ public class AccessControl {
     }
 
     private boolean accessOther() {
-        // TODO: keksi mikä on kertakäynti englanniksi :D
         visits = visits - 1;
-        System.out.println(visits);
         if (visits < 0) {
             return false;
         }
