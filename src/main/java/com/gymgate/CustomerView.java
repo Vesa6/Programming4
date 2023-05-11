@@ -3,21 +3,14 @@ package com.gymgate;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Popup;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import java.util.logging.Logger;
@@ -46,6 +38,9 @@ public class CustomerView {
     private JTable table;
 
     CustomerView() {
+        /* 
+         * Shows list of customers with a possibility to edit or remove them
+         */
         logger.info("Created a new instance of CustomerView");
         createCustomerViewGUI();
     }
@@ -143,9 +138,8 @@ public class CustomerView {
 
                     try {
                         openModifyCustomerView(CustomerDatabase.getInstance().getCustomerById(customerId));
-                    } catch (SQLException exception) {
-                        // TODO Auto-generated catch block
-                        exception.printStackTrace();
+                    } catch (SQLException sqe) {
+                        logger.warning("Unable to modify customers: " + sqe);
                     }
 
                 });

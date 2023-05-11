@@ -1,7 +1,6 @@
 package com.gymgate;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,6 +9,9 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 public class HidingPopup extends JDialog {
+    /* 
+     * Creates pop up message, which will be hidden for delay_in_ms of seconds
+     */
     private static final Logger logger = DbgLogger.getLogger();
 
     private int delay_in_ms;

@@ -26,14 +26,17 @@ public class Main {
     public static void main(String[] args) throws SQLException {
 
         logger.info("Created an instance of Main");
-        CustomerDatabase db = new CustomerDatabase();
+        new CustomerDatabase();
 
         createLoginGUI();
 
     }
 
     private static void createLoginGUI() {
-        
+        /*
+         * Creates UI for user login screen
+         */
+
         Dimension txtBoxDimension = new Dimension(200, 20);
 
         URL url = Main.class.getResource("Icons/GymGate.png");

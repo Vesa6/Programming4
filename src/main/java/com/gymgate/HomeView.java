@@ -1,14 +1,11 @@
 package com.gymgate;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Logger;
@@ -19,9 +16,12 @@ public class HomeView implements ActionListener {
     private static final Logger logger = DbgLogger.getLogger();
 
     // This is to dynamically change sizes of all buttons at toolbar at once
-    private static int BTNTBAR_HEIGHT = 50;
+    private static int TB_HEIGHT = 50;
 
     public HomeView(JTextField usernameField, JPasswordField passwordField) {
+        /*
+         * Creates a UI for the home screen.
+         */
         logger.info("Created an instance of HomeView");
 
         DbgLogger.setDisplayDummyRFID(true);
@@ -35,50 +35,56 @@ public class HomeView implements ActionListener {
     }
 
     private void displayDummyRFID() {
+        /*
+         * Dummy RFID is used for testing to simulate the
+         * functionalities of the gym access control system.
+         * If enabled, will appear when running the program
+         * This will be turned off by default in the configurations
+         */
         JFrame dummyRFIDFrame = new JFrame("Dummy RFID");
         dummyRFIDFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         dummyRFIDFrame.setSize(300, 300);
-        dummyRFIDFrame.setLocation(50,300);
+        dummyRFIDFrame.setLocation(50, 300);
         dummyRFIDFrame.setAlwaysOnTop(true);
-    
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-    
+
         mainPanel.add(Box.createVerticalStrut(20));
         JLabel CustomerIdLabel = new JLabel("Asiakas ID");
         CustomerIdLabel.setFont(new Font("Arial", Font.PLAIN, 24));
         CustomerIdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(CustomerIdLabel);
-    
-        JTextField customerField = new JTextField(10); 
-        customerField.setMaximumSize(customerField.getPreferredSize()); 
+
+        JTextField customerField = new JTextField(10);
+        customerField.setMaximumSize(customerField.getPreferredSize());
         customerField.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainPanel.add(customerField);
         mainPanel.add(Box.createVerticalStrut(50));
-        
-        mainPanel.add(Box.createVerticalStrut(20)); 
-    
+
+        mainPanel.add(Box.createVerticalStrut(20));
+
         JPanel btnPanel = new JPanel();
-        
+
         JButton svButton = new JButton("Tallenna");
         svButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnPanel.add(svButton);
-    
+
         svButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CustomerDatabase.getInstance().addRFIDEvent(Integer.valueOf(customerField.getText()));
                 customerField.setText("");
 
-                //EventViewer.frame.dispose();
-                //new EventViewer();
-                                          
+                // EventViewer.frame.dispose();
+                // new EventViewer();
+
             }
         });
-    
+
         btnPanel.add(Box.createHorizontalGlue()); // Creates horizontal space between elements
-    
+
         JButton resetButton = new JButton("Nollaa");
         resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         resetButton.addActionListener(new ActionListener() {
@@ -89,12 +95,11 @@ public class HomeView implements ActionListener {
         });
 
         btnPanel.add(resetButton);
-    
+
         mainPanel.add(btnPanel);
         dummyRFIDFrame.add(mainPanel);
         dummyRFIDFrame.setVisible(true);
     }
-    
 
     private void openCustomerView() {
         new CustomerView();
@@ -105,6 +110,9 @@ public class HomeView implements ActionListener {
     }
 
     private void openHelpWindow() {
+        /*
+         * Opens help window
+         */
 
         JLabel ggLabel = new JLabel();
         ggLabel.setText("GYMGATE OY");
@@ -286,20 +294,14 @@ public class HomeView implements ActionListener {
         rfidPanel.setLayout(new BoxLayout(rfidPanel, BoxLayout.X_AXIS));
         rfidPanel.add(Box.createHorizontalStrut(78));
 
-        
-
         rfidPanel.add(rfidButton);
 
-        
         rightPanel.add(rfidPanel);
 
         rightPanel.add(Box.createVerticalStrut(30));
         JButton cancelButton = new JButton("Peruuta");
         rightPanel.add(cancelButton);
         rightPanel.add(Box.createVerticalGlue());
-
-        
-
 
         cancelButton.addActionListener(e -> {
             addUserFrame.dispose();
@@ -311,11 +313,11 @@ public class HomeView implements ActionListener {
         mainPanel.add(rightPanel);
 
         rfidButton.addActionListener(e -> {
-    
+
             HidingPopup popup = new HidingPopup(mainPanel, "RFID lisätty", 2000, "Icons/checkMark.png");
             popup.showPopup();
 
-            });
+        });
 
         addUserFrame.add(mainPanel, BorderLayout.CENTER);
 
@@ -442,31 +444,7 @@ public class HomeView implements ActionListener {
             viewCustomersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             viewCustomersButton.addActionListener(viewCustomersButtonListener);
 
-            /*
-             * JButton helpButton = new JButton(iconFactory("Help_icon.png", BTNTBAR_HEIGHT,
-             * BTNTBAR_HEIGHT));
-             * helpButton.setBorder(BorderFactory.createEmptyBorder());
-             * helpButton.setContentAreaFilled(false);
-             * helpButton.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-             * helpButton.addActionListener(helpButtonListener);
-             */
-
             createMenuBar(addUserButtonListener, helpButtonListener, viewEventsButtonListener, home);
-
-            /*
-             * JPanel toolPanel = new JPanel();
-             * toolPanel.setLayout(new BoxLayout(toolPanel, BoxLayout.X_AXIS));
-             * Box tpBox = Box.createHorizontalBox();
-             * tpBox.add(Box.createHorizontalGlue());
-             * //tpBox.add(menuButton);
-             * 
-             * tpBox.add(Box.createRigidArea(new Dimension(1550, 0)));
-             * tpBox.add(Box.createHorizontalGlue());
-             * tpBox.add(helpButton);
-             * tpBox.add(Box.createRigidArea(new Dimension(200, 0)));
-             * 
-             * toolPanel.add(tpBox);
-             */
 
             JPanel mainPanel = new JPanel();
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -493,20 +471,16 @@ public class HomeView implements ActionListener {
 
         JMenuBar mb = new JMenuBar();
         JMenu menu = new JMenu("");
-        menu.setIcon(iconFactory("Icons/Menu_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-        // JMenuItem sendHelp = new JMenuItem("");
-        // sendHelp.setIcon(iconFactory("Help_icon.png", BTNTBAR_HEIGHT,
-        // BTNTBAR_HEIGHT));
-        // sendHelp.addActionListener(helpButtonListener);
-        ImageIcon manageCustomersIcon = iconFactory("Icons/Edit_users_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT);
+        menu.setIcon(iconFactory("Icons/Menu_icon.png", TB_HEIGHT, TB_HEIGHT));
+        ImageIcon manageCustomersIcon = iconFactory("Icons/Edit_users_icon.png", TB_HEIGHT, TB_HEIGHT);
 
         JMenu manage = new JMenu("Asiakkaiden hallinta");
         manage.setIcon(manageCustomersIcon);
 
-        ImageIcon viewCustomersIcon = iconFactory("Icons/List_customers_icon.png", BTNTBAR_HEIGHT - 15,
-                BTNTBAR_HEIGHT - 15);
-        ImageIcon addCustomersIcon = iconFactory("Icons/List_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT);
-        ImageIcon viewEventsIcon = iconFactory("Icons/Add_customer_icon.png", BTNTBAR_HEIGHT - 15, BTNTBAR_HEIGHT - 15);
+        ImageIcon viewCustomersIcon = iconFactory("Icons/List_customers_icon.png", TB_HEIGHT - 15,
+                TB_HEIGHT - 15);
+        ImageIcon addCustomersIcon = iconFactory("Icons/List_icon.png", TB_HEIGHT, TB_HEIGHT);
+        ImageIcon viewEventsIcon = iconFactory("Icons/Add_customer_icon.png", TB_HEIGHT - 15, TB_HEIGHT - 15);
 
         JMenuItem adder, browser, events;
 
@@ -524,18 +498,12 @@ public class HomeView implements ActionListener {
         manage.add(adder);
         manage.add(browser);
         mb.add(menu);
-        // JSeparator sep = new JSeparator();
-        // sep.setForeground(Color.white);
-        // mb.add(sep);
-        // mb.add(sendHelp);
 
         JButton sendHelp = new JButton("");
-        sendHelp.setIcon(iconFactory("Icons/Help_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
-        sendHelp.setPreferredSize(new Dimension(BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        sendHelp.setIcon(iconFactory("Icons/Help_icon.png", TB_HEIGHT, TB_HEIGHT));
+        sendHelp.setPreferredSize(new Dimension(TB_HEIGHT, TB_HEIGHT));
         sendHelp.setMargin(new Insets(2, 2, 2, 2));
         sendHelp.setBorderPainted(false);
-        // Border border = BorderFactory.createEmptyBorder(2,2,2,2);
-        // sendHelp.setBorder(border);
         sendHelp.setContentAreaFilled(false);
         sendHelp.addActionListener(helpButtonListener);
         JSeparator sep = new JSeparator();
@@ -547,9 +515,9 @@ public class HomeView implements ActionListener {
 
         JMenu userMenu = new JMenu("Käyttäjä");
 
-        userMenu.setIcon(iconFactory("Icons/Profile_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+        userMenu.setIcon(iconFactory("Icons/Profile_icon.png", TB_HEIGHT, TB_HEIGHT));
         JMenuItem logout = new JMenuItem("Kirjaudu ulos",
-                iconFactory("Icons/Sign_out_Icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+                iconFactory("Icons/Sign_out_Icon.png", TB_HEIGHT, TB_HEIGHT));
         logout.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -558,7 +526,7 @@ public class HomeView implements ActionListener {
         });
 
         JMenuItem changePassword = new JMenuItem("Vaihda salasana",
-                iconFactory("Icons/Settings_icon.png", BTNTBAR_HEIGHT, BTNTBAR_HEIGHT));
+                iconFactory("Icons/Settings_icon.png", TB_HEIGHT, TB_HEIGHT));
         changePassword.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

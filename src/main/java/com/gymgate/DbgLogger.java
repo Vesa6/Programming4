@@ -14,6 +14,12 @@ import java.util.logging.*;
 import org.json.JSONObject;
 
 public class DbgLogger {
+    /*
+     * This class handles the logging of this program.
+     * In the configuration file you can also change the dummy RFID UI
+     * to be visible on the startup of the program
+     * (this is used to test the functions of the customer access control)
+     */
     private static FileHandler logHandler;
     private static String logFile = "dbg_log.txt";
     private static String configFile = "config.json";
@@ -21,6 +27,13 @@ public class DbgLogger {
     private static String logLevel;
 
     public static Logger getLogger() {
+        /*
+         * Initiates the logger for the program.
+         * The level of the logger will be determined by
+         * configuration file (will be created if doesn't exist)
+         * Old log file will be replaced with new one on every run of the program,
+         * except the crash logs will be saved as "crashlog_dd-MM-yyyy_HH-mm-ss.txt"
+         */
         createDefaultConfig();
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         try {
@@ -50,26 +63,36 @@ public class DbgLogger {
     }
 
     public void info(String message) {
+        // Adds INFO level message to log
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         logger.log(Level.INFO, message);
     }
 
     public void warning(String message) {
+        // Adds WARNING level message to log
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         logger.log(Level.WARNING, message);
     }
 
     public void severe(String message) {
+        // Adds SEVERE level message to log
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         logger.log(Level.SEVERE, message);
     }
 
     public void fine(String message) {
+        // Adds FINE level message to log (Used on finest debug traces
+        // and will fill out log very fast)
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         logger.log(Level.FINE, message);
     }
 
     private static void createDefaultConfig() {
+        /*
+         * If default configuration file doesn't exist,
+         * creates new one and sets logging level to severe and hides
+         * dummy RFID UI
+         */
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         if (!checkIfExists()) {
             JSONObject json = new JSONObject();
@@ -92,6 +115,7 @@ public class DbgLogger {
     }
 
     private static boolean checkIfExists() {
+        // Checks whether the configuration file exists or not
         File file = new File(configFile);
         if (file.exists()) {
             return true;
@@ -100,6 +124,9 @@ public class DbgLogger {
     }
 
     private static void handleExistingFile() {
+        /*
+         * Reads the configurations from existing config file
+         */
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         StringBuilder sb = new StringBuilder();
         try {
@@ -119,6 +146,10 @@ public class DbgLogger {
     }
 
     public static void generateCrashLog() {
+        /*
+         * In case of SEVERE logging events (we expect the program to not to work
+         * if these occur) this saves the log messages
+         */
         Logger logger = Logger.getLogger(DbgLogger.class.getName());
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss");
         LocalDateTime dt = LocalDateTime.now();
@@ -126,11 +157,11 @@ public class DbgLogger {
         String filename = "crash_log_" + date + ".txt";
         Path source = Paths.get("dbg_log.txt");
         Path copy = Paths.get(filename);
-        try{
+        try {
             new File(copy.toString());
-            Files.copy(source,copy);
+            Files.copy(source, copy);
             logger.info("Crashed? Please contact customer support.");
-        }catch(IOException ioe){
+        } catch (IOException ioe) {
             System.out.println(ioe);
             logger.info("Failed to copy crash log: " + ioe);
         }

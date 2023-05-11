@@ -6,6 +6,10 @@ import java.awt.*;
 import java.util.logging.Logger;
 
 public class ConfirmationPopup extends JDialog {
+    /*
+     * Generates a popup window asking for confirmation
+     * for action about to be committed
+     */
 
     private static final Logger logger = DbgLogger.getLogger();
     private JButton yesButton;

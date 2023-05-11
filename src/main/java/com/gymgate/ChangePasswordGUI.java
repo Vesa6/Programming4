@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 import org.apache.commons.codec.digest.Crypt;
 
 public class ChangePasswordGUI {
+    /*
+     * Creates a GUI for password changing
+     */
     String newPass = "";
     String newPassRepeat = "";
     String username = "";
@@ -124,6 +127,12 @@ public class ChangePasswordGUI {
     }
 
     public void changePassword() {
+        /* 
+         * User can't change password if:
+         * 1. The old password is invalid
+         * 2. The new passwords needs to be written twice and they aren't identical
+         * 3. The new password is identical to the old one
+         */
         if (!checkIfCorrectPass()) {
             logger.info("User failed to change password. Reason: Wrong old password");
             HidingPopup inCorrectPass = new HidingPopup(changePassFrame, "Väärä salasana", 1000,
@@ -141,13 +150,13 @@ public class ChangePasswordGUI {
             HidingPopup samePassPopup = new HidingPopup(changePassFrame, "Uusi salasana ei voi olla sama kuin vanha",
                     2000, "Icons/Denied_icon.png");
             emptyFields();
-            
+
             samePassPopup.showPopup();
         } else {
             CustomerDatabase.getInstance().changePassword(getUsername(), getNewPass());
             logger.info("User changed the password successfully");
             HidingPopup successPopup = new HidingPopup(changePassFrame, "Salasana vaihdettu", 2000,
-                    "Icons/checkMark.png");      
+                    "Icons/checkMark.png");
             successPopup.showPopup();
             changePassFrame.dispose();
         }

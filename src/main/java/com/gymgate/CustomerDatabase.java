@@ -78,7 +78,7 @@ public class CustomerDatabase {
 
             // Below class is to create a test database with 1000 random customers to test
             // the functionalities of it
-            new DatabaseFiller(30);
+            new DatabaseFiller();
 
             return true;
         }
@@ -154,13 +154,6 @@ public class CustomerDatabase {
          * 
          */
         try {
-            /*
-             * byte bytes[] = new byte[13];
-             * secureRandom.nextBytes(bytes);
-             * String saltBytes = new String(Base64.getEncoder().encode(bytes));
-             * String salt = "$6$" + saltBytes;
-             * String hashedPassword = Crypt.crypt(password, salt);
-             */
             String hashedPassword = cryptPass(password);
             String userSet = "INSERT INTO Users(username, password) VALUES (?, ?)";
             PreparedStatement ps = connection.prepareStatement(userSet);
@@ -175,7 +168,9 @@ public class CustomerDatabase {
     }
 
     public String cryptPass(String password) {
-        // returns crypted password from string given as parameter
+        /*
+         * Returns crypted password from a string that is given as parameter
+         */
         byte bytes[] = new byte[13];
         secureRandom.nextBytes(bytes);
         String saltBytes = new String(Base64.getEncoder().encode(bytes));
@@ -186,6 +181,9 @@ public class CustomerDatabase {
     }
 
     public String getCryptedPassword(String username) {
+        /*
+         * Gets password of user in crypted form
+         */
         try {
             String getPass = "SELECT (password) FROM Users WHERE username = ?";
             PreparedStatement ps = connection.prepareStatement(getPass);
@@ -227,8 +225,8 @@ public class CustomerDatabase {
         /*
          * Used to check if the username is available before attempting to register it
          * Returns true if user is already registered
+         * Will be used if we get to make "add user" function to admin
          */
-
         String checkQuery = "SELECT username FROM Users WHERE username = ?";
         PreparedStatement ps = connection.prepareStatement(checkQuery);
         ps.setString(1, username);
@@ -245,7 +243,13 @@ public class CustomerDatabase {
     }
 
     public void addRFIDEvent(int id) {
-
+        /*
+         * Adds event from RFID scan to events
+         * TODO: kertakäynneille vähennä yksi käyntikerta, jos tulos -1 nii älä lisää
+         * tapahtumaa
+         * TODO: jos kuukausikäynti ja DT.now > asiakkuus päättyy päivä niin älä lisää
+         * tapahtumaa
+         */
         String eventSet = "INSERT INTO Events(date, customer_id) VALUES (?,?)";
         try {
 
@@ -269,7 +273,6 @@ public class CustomerDatabase {
         /*
          * Checks if the credentials user provided are valid. Returns false if not.
          */
-
         String userCredentials = "SELECT username, password FROM Users WHERE username = ?";
         try {
             PreparedStatement ps = connection.prepareStatement(userCredentials);
@@ -301,7 +304,6 @@ public class CustomerDatabase {
     }
 
     public ResultSet getCustomers() {
-
         // Get all customers from DB
         try {
             Statement statement = connection.createStatement();
@@ -329,7 +331,9 @@ public class CustomerDatabase {
 
     public void updateCustomer(int customer_id, String first_name, String last_name, String address,
             String phone_number, String email, String additional_information, String membership_end, int visits) {
-
+        /* 
+         * Will be called if the customer is edited
+         */
         String updateCustomer = "UPDATE Customers SET first_name = ?, last_name = ?, address = ?, phone_number = ?, email = ?, additional_information = ?, membership_end = ?, visits = ? WHERE customer_id = ?";
 
         try {
@@ -354,7 +358,9 @@ public class CustomerDatabase {
     }
 
     public ResultSet getEvents() {
-
+        /* 
+         * Gets all the events from the database to display
+         */
         try {
             Statement statement = connection.createStatement();
             String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id ORDER BY e.event_id DESC";
@@ -388,6 +394,9 @@ public class CustomerDatabase {
     }
 
     public ResultSet selectEventDate(String startDate, String endDate) {
+        /* 
+         * Select events from event view between the dates given as parameter
+         */
         try {
             String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id WHERE e.date BETWEEN ? AND ? ORDER BY e.event_id DESC";
             PreparedStatement ps = connection.prepareStatement(resultQuery);
@@ -403,6 +412,9 @@ public class CustomerDatabase {
     }
 
     public boolean deleteCustomer(int customerId) {
+        /* 
+         * Deletes customer from DB
+         */
 
         String deleteCustomer = "DELETE FROM Customers WHERE customer_id = ?";
 
@@ -420,6 +432,9 @@ public class CustomerDatabase {
     }
 
     public ResultSet searchByName(String firstName, String lastName) {
+        /* 
+         * Search users by name from browse customers
+         */
         try {
             String resultQuery = "SELECT * FROM Customers WHERE first_name = ? AND last_name = ?";
             PreparedStatement ps = connection.prepareStatement(resultQuery);
