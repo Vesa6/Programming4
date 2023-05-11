@@ -24,8 +24,6 @@ public class HomeView implements ActionListener {
          */
         logger.info("Created an instance of HomeView");
 
-        DbgLogger.setDisplayDummyRFID(true);
-
         this.usernameField = usernameField;
         this.passwordField = passwordField;
 
@@ -224,9 +222,12 @@ public class HomeView implements ActionListener {
         JTextField visits = new JTextField(20);
         visits.setMaximumSize(textBoxDimension);
 
+        JLabel text = new JLabel("Kesto (kk):");
+
         // Make the fields invisible unless radiobutton activated
         months.setVisible(false);
         visits.setVisible(false);
+        text.setVisible(false);
 
         JRadioButton membershipType = new JRadioButton("Kuukausijäsenyys");
         JRadioButton membershipType2 = new JRadioButton("Kertakäynti");
@@ -241,9 +242,11 @@ public class HomeView implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource() == membershipType) {
                     months.setVisible(true);
+                    text.setVisible(true);
                     visits.setVisible(false);
                 } else if (e.getSource() == membershipType2) {
                     months.setVisible(false);
+                    text.setVisible(false);
                     visits.setVisible(true);
                 }
                 leftPanel.revalidate();
@@ -255,9 +258,11 @@ public class HomeView implements ActionListener {
         membershipType2.addActionListener(membershipListener);
 
         membershipTypeGroup.add(membershipType);
+        
         membershipTypeGroup.add(membershipType2);
 
         leftPanel.add(membershipType);
+        leftPanel.add(text);
         leftPanel.add(months);
         leftPanel.add(Box.createVerticalGlue());
         leftPanel.add(membershipType2);
@@ -340,6 +345,23 @@ public class HomeView implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                 //Check phonenumber. Only the first character can be +, all the rest need to be
+                 for (char num : phoneNumberField.getText().toCharArray()) {
+
+                    int u = 0;
+
+                    if (num == '+' && u == 0) {
+                        continue;
+                    }
+                    if (!Character.isDigit(num)) {
+                        HidingPopup popup = new HidingPopup(addUserFrame,
+                            "Muutos epäonnistui, puhelinnumero on virheellisessä muodossa.", 2000);
+                        popup.showPopup();
+                        logger.info("Adding user failed, phone number is not in correct format.");
+                        return;
+                    }
+                }
+
                 if ((e.getSource() == saveButton) && (membershipType.isSelected())) {
                     DateTimeFormatter sqlDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                     LocalDate currentDate = LocalDate.now();
@@ -349,13 +371,40 @@ public class HomeView implements ActionListener {
 
                     String memberTypeSelected = "Kuukausijäsenyys";
 
+                    if ((firstNameField.getText().isEmpty()) || (lastNameField.getText().isEmpty()) || (phoneNumberField.getText().isEmpty()) || (emailField.getText().isEmpty()) ||
+                    months.getText().isEmpty() || (homeAddressField.getText().isEmpty()))
+                    {
+                        HidingPopup popup = new HidingPopup(addUserFrame,
+                            "Muutos epäonnistui, kaikki kentät on täytettävä.", 2000);
+                        popup.showPopup();
+                        logger.info("Adding user failed, all fields are not filled.");
+                        return;
+                    }
+                    
+
                     CustomerDatabase.getInstance().addCustomerMonthly(firstNameField.getText(), lastNameField.getText(),
                             phoneNumberField.getText(), emailField.getText(), memberTypeSelected, currentDateString,
                             endDateString, homeAddressField.getText(), 0, additionalInfo.getText());
 
+                        HidingPopup popup = new HidingPopup(addUserFrame,
+                            "Asiakas lisätty.", 2000, "Icons/checkMark.png");
+                        popup.showPopup();
+                        addUserFrame.dispose();
+
                 } else if ((e.getSource() == saveButton) && (membershipType2.isSelected())) {
 
                     String memberTypeSelected = "Kertakäynti";
+
+
+                    if ((firstNameField.getText().isEmpty()) || (lastNameField.getText().isEmpty()) || (phoneNumberField.getText().isEmpty()) || (emailField.getText().isEmpty()) ||
+                    visits.getText().isEmpty() || (homeAddressField.getText().isEmpty()))
+                    {
+                        HidingPopup popup = new HidingPopup(addUserFrame,
+                                "Muutos epäonnistui, kaikki kentät on täytettävä.", 2000);
+                        popup.showPopup();
+                        logger.info("Adding user failed, all fields are not filled.");
+                        return;
+                    }
 
                     try {
                         CustomerDatabase.getInstance().addCustomerVisits(firstNameField.getText(),
@@ -363,6 +412,12 @@ public class HomeView implements ActionListener {
                                 phoneNumberField.getText(), emailField.getText(), memberTypeSelected,
                                 homeAddressField.getText(), Integer.valueOf(visits.getText()),
                                 additionalInfo.getText());
+
+                                HidingPopup popup = new HidingPopup(addUserFrame,
+                             "Asiakas lisätty.", 2000, "Icons/checkMark.png");
+                                popup.showPopup();
+                                addUserFrame.dispose();
+
                     } catch (NumberFormatException nE) {
 
                         HidingPopup popup = new HidingPopup(addUserFrame,
