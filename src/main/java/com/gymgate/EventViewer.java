@@ -131,6 +131,7 @@ public class EventViewer {
     private static void updateEventTableLabels(JTable table, String start, String end) {
         start = formatDateForSearch(start);
         end = formatDateForSearch(end);
+        //TODO: CHECK
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0);
 

@@ -15,7 +15,7 @@ public class DatabaseFiller {
      */
     private static final Logger logger = DbgLogger.getLogger();
     //This integer determines that how many of the test instances are created
-    private static int QUANTITY = 1000;
+    private static int QUANTITY = 30;
     private static LocalDateTime lastVisit = null;
     String[] finnishFirstNames = {
             "Aada", "Aamu", "Aapo", "Aatos", "Ahti", "Aida", "Aili", "Aino", "Akseli", "Alba",

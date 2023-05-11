@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class CustomerDatabase {
     private static final Logger logger = DbgLogger.getLogger();
-
+    private AccessControl ac = new AccessControl();
     private Connection connection = null;
     private static CustomerDatabase dbinstance = null;
     private SecureRandom secureRandom = new SecureRandom();
@@ -108,7 +108,8 @@ public class CustomerDatabase {
             preparedStatement.setString(6, membership_start);
             preparedStatement.setString(7, membership_end);
             preparedStatement.setString(8, homeAddress);
-            preparedStatement.setString(9, notes);
+            preparedStatement.setInt(9, visits);
+            preparedStatement.setString(10, notes);
 
             preparedStatement.executeUpdate();
             preparedStatement.close();
@@ -242,6 +243,27 @@ public class CustomerDatabase {
         return false;
     }
 
+    public boolean customerExists(int id) {
+        /*
+         * Checks from database if requested userid even exists
+         */
+        int toCompare = 0;
+        try{
+        String checkQuery = "SELECT customer_id FROM Customers WHERE customer_id = ?";
+        PreparedStatement ps = connection.prepareStatement(checkQuery);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            toCompare = rs.getInt("customer_id");
+        }
+        ps.close();
+        }catch(SQLException e){
+            logger.warning("Problems getting to check if customer " + id + "exists: " + e);
+            return false;
+        }
+        return (id == toCompare && toCompare != 0);
+    }
+
     public void addRFIDEvent(int id) {
         /*
          * Adds event from RFID scan to events
@@ -250,6 +272,9 @@ public class CustomerDatabase {
          * TODO: jos kuukausikäynti ja DT.now > asiakkuus päättyy päivä niin älä lisää
          * tapahtumaa
          */
+        if(!ac.checkAccess(id)){
+            return;
+        }
         String eventSet = "INSERT INTO Events(date, customer_id) VALUES (?,?)";
         try {
 
@@ -267,6 +292,24 @@ public class CustomerDatabase {
             logger.warning("Error storing an event: " + e.getMessage());
         }
 
+    }
+
+    public void minusOneVisit(int id, int newvisits){
+        /* 
+         * Deducts one visit from user after entering
+         */
+        String updateCustomer = "UPDATE Customers SET visits = ? WHERE customer_id = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(updateCustomer);
+            preparedStatement.setInt(1, newvisits);
+            preparedStatement.setInt(2, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+            logger.info("Deducted one visit from customer " + id);
+        } catch (SQLException e) {
+            logger.warning("Error updating customer: " + e.getMessage());
+        }
+        
     }
 
     public boolean checkCredentials(String username, String password) {
@@ -329,6 +372,19 @@ public class CustomerDatabase {
         }
     }
 
+    public ResultSet getTypeAndRelatedInfo(int id){
+        try {
+            String getCustomer = "SELECT membership_type, visits, membership_end FROM Customers WHERE customer_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(getCustomer);
+            preparedStatement.setInt(1, id);
+            ResultSet results = preparedStatement.executeQuery();
+            return results;
+        } catch (SQLException e) {
+            logger.warning("Error getting customer with id " + id + ": " + e.getMessage());
+            return null;
+        }
+    }
+
     public void updateCustomer(int customer_id, String first_name, String last_name, String address,
             String phone_number, String email, String additional_information, String membership_end, int visits) {
         /* 
@@ -365,6 +421,7 @@ public class CustomerDatabase {
             Statement statement = connection.createStatement();
             String resultQuery = "SELECT e.date, c.first_name || ' ' || c.last_name AS name, e.customer_id FROM Events e INNER JOIN Customers c ON e.customer_id = c.customer_id ORDER BY e.event_id DESC";
             ResultSet results = statement.executeQuery(resultQuery);
+            //TODO add close():s?
             return results;
 
         } catch (SQLException e) {
@@ -376,9 +433,8 @@ public class CustomerDatabase {
 
     public void saveEvent(int customerid, String date) {
         // This function is to save the every customer visit to DB
-
-        // Gonna implement the decrypt stuff somewhere else so this can be used to fill
-        // database with test data
+        // The testuser parameter is to get events from databasefiller function
+        //(this ignores the access control)
         String eventSet = "INSERT INTO Events(date, customer_id) VALUES (?,?)";
         try {
             PreparedStatement ps = connection.prepareStatement(eventSet);
